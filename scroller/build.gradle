@@ -1,0 +1,79 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+mainClassName = 'rob.scroller.ScrollerGame'
+sourceCompatibility = 1.6
+
+repositories {   mavenCentral()   }
+
+dependencies {
+	compile group: 'org.lwjgl.lwjgl', name: 'lwjgl', version: '2.8.3'
+	compile group: 'org.lwjgl.lwjgl', name: 'lwjgl_util', version: '2.8.3'
+	compile group: 'com.google.guava', name: 'guava', version: '13.0.1'
+	compile group: 'com.google.inject', name: 'guice', version: '3.0'
+	compile group: 'org.jbox2d', name: 'jbox2d-library', version: '2.1.2.2'
+	compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+def platforms = ['windows', 'linux', 'osx']
+platforms.each { platform ->
+	task "${platform}Natives" {
+		def outputDir = "$buildDir/natives/$platform"
+		inputs.files(configurations.compile)
+		outputs.dir(outputDir)
+		doLast {
+			copy {
+				def artifacts = configurations.compile.resolvedConfiguration.resolvedArtifacts
+						.findAll { it.classifier == "natives-$platform" }
+				artifacts.each {
+					from zipTree(it.file)
+				}
+				into outputDir
+			}
+		}
+	}
+}
+
+task natives {
+	description "Copies native libraries to an appropriate directory."
+	dependsOn platforms.collect { "${it}Natives" }.findAll { tasks[it] }
+
+	platforms.collect { "${it}Natives" }.findAll { tasks[it] }.collect{ tasks[it] }.
+	collect { it.outputs.files }.findAll() {
+		it.each { outputs.dir it }	}
+}
+
+processResources.dependsOn natives
+
+// make the task "installApp" create a working application and put the natives in the executable directory
+// yes, this is not really nice but works for now
+applicationDistribution.from(natives) { into "bin" }
+//applicationDistribution.from(natives) { into "lib/natives" }
+
+// make the task "run" work
+run.jvmArgs("-Djava.library.path=" + platforms.collect { platform -> "$buildDir/natives/$platform" }.join(File.pathSeparator))
+
+eclipse {
+
+	classpath {
+
+		//		file.withXml {
+		//			def node = it.asNode()
+		//			node.appendNode('classpathentry', ['kind':'lib', 'path':'lib/natives'])
+		//		}
+
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
+
+// handle eclipse configuration with native libs
+// you have to add these natives to your launch configuration
+tasks['eclipse'].doLast {
+	copy {
+		from natives
+		into "lib/natives"
+	}
+}
+
