@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.opengl.GL11;
 
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
@@ -39,16 +39,19 @@ public class WorldEntities implements ISimulationAction
 
 	public void render()
 	{
-		Vector2f origin = getRenderOrigin();
+		GL11.glPushMatrix();
+		GL11.glScalef(64, 64, 1);
 
-		dungeon.render(origin);
+		dungeon.render(context.getRenderer());
 
 		for (Entity entity : getEntities())
 		{
-			entity.render(origin);
+			entity.render(context.getRenderer());
 		}
 
-		player.render(origin);
+		player.render(context.getRenderer());
+		
+		GL11.glPopMatrix();
 	}
 
 	public Iterable<Entity> getEntities()
@@ -86,14 +89,6 @@ public class WorldEntities implements ISimulationAction
 		this.dungeon = dungeon;
 	}
 
-	public Vector2f getRenderOrigin()
-	{
-		Vector2f origin = Vector2f.sub(getPlayer().getCenterPosition(), context.getScreenCenter(), null);
-		origin.setX(MathUtils.clamp(origin.getX(), 0, dungeon.getMaximumX()));
-		origin.setY(MathUtils.clamp(origin.getY(), 0, dungeon.getMaximumY()));
-		return origin;
-	}
-
 	public void addEnemy(Enemy enemy)
 	{
 		enemies.add(enemy);
@@ -105,13 +100,24 @@ public class WorldEntities implements ISimulationAction
 	}
 
 	@Override
-	public void simulateStep()
+	public void afterWorldStep()
 	{
-		player.simulateStep();
-
-		for (Enemy enemy : enemies)
+		player.afterWorldStep();
+	
+		for (Entity entity : getEntities())
 		{
-			enemy.simulateStep();
+			entity.afterWorldStep();
+		}
+	}
+
+	@Override
+	public void beforeWorldStep()
+	{
+		player.beforeWorldStep();
+
+		for (Entity entity : getEntities())
+		{
+			entity.beforeWorldStep();
 		}
 	}
 }

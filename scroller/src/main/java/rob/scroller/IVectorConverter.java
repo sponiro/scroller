@@ -5,7 +5,9 @@ import org.lwjgl.util.vector.Vector2f;
 
 public interface IVectorConverter
 {
-	public Vec2 convertToMeter(Vector2f vector);
+	Vec2 convertToMeter(Vector2f vector);
 
-	public Vector2f convertToPixel(Vec2 vector);
+	Vector2f convertToPixel(Vec2 vector);
+
+	Vector2f convertToPixel(Vector2f vector);
 }

@@ -12,7 +12,16 @@ public class VectorConverter implements IVectorConverter
 	{
 		Vector2f result = new Vector2f();
 		result.x = PIXEL_PER_METER * vector.x;
-		result.y = -PIXEL_PER_METER * vector.y;
+		result.y = PIXEL_PER_METER * vector.y;
+		return result;
+	}
+	
+	@Override
+	public Vector2f convertToPixel(Vector2f vector)
+	{
+		Vector2f result = new Vector2f();
+		result.x = PIXEL_PER_METER * vector.x;
+		result.y = PIXEL_PER_METER * vector.y;
 		return result;
 	}
 
@@ -20,7 +29,7 @@ public class VectorConverter implements IVectorConverter
 	{
 		Vec2 result = new Vec2();
 		result.x = PIXEL_PER_METER_INVERSE * vector.x;
-		result.y = -PIXEL_PER_METER_INVERSE * vector.y;
+		result.y = PIXEL_PER_METER_INVERSE * vector.y;
 		return result;
 	}
 }

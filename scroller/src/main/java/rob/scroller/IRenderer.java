@@ -4,8 +4,5 @@ import org.newdawn.slick.opengl.Texture;
 
 public interface IRenderer
 {
-	public abstract void fillRectangle(int x, int y, int width, int height, Texture texture);
-
-	public abstract void blit(int x, int y, Texture texture);
-
+	void blit(float x, float y, float width, float height, Texture texture);
 }

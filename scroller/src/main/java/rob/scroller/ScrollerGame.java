@@ -43,6 +43,8 @@ public class ScrollerGame
 	{
 		context.setDisplayWidth(800);
 		context.setDisplayHeight(600);
+//		context.setDisplayWidth(1000);
+//		context.setDisplayHeight(750);
 
 		try
 		{
@@ -91,22 +93,20 @@ public class ScrollerGame
 
 	private void initGame()
 	{
-		context.getWorldFactory().createDungeon(10, 10);
-		context.getWorldFactory().createPlayer(new Vector2f(0, 0));
+		context.getWorldFactory().createDungeon(13, 10);
+		context.getWorldFactory().createPlayer(new Vector2f(1, 2));
 
 		Random random = new Random();
 		for (int i = 0; i < 100; i++)
 		{
 			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
-			enemy.setVelocity(new Vector2f(0f, random.nextInt(50) + 50f));
+			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.6f + 1f)));
 		}
 	}
 
 	private Vector2f randomPosition(Random random)
 	{
-		int maximumX = context.getWorldEntities().getDungeon().getMaximumX();
-		int maximumY = context.getWorldEntities().getDungeon().getMaximumY();
-		return new Vector2f(random.nextInt(maximumX), random.nextInt(maximumY));
+		return new Vector2f(random.nextFloat() * 10, 10);
 	}
 
 	private void processInput()
@@ -197,9 +197,11 @@ public class ScrollerGame
 
 			context.setMouseAim(getMouseAim());
 
-			getWorldEntities().simulateStep();
+			getWorldEntities().beforeWorldStep();
 
 			context.getWorld().step(context.getWorldTimestep(), 8, 3);
+
+			getWorldEntities().afterWorldStep();
 
 			lastWorldTime = now;
 		}
@@ -228,19 +230,19 @@ public class ScrollerGame
 		return context.getWorldEntities();
 	}
 
-	private Vector2f mouseToScreenCoordinates(int x, int y)
-	{
-		return new Vector2f(x, Display.getHeight() - y);
-	}
-
 	private Vector2f getMouseAim()
 	{
-		Vector2f mouseCoordinates = mouseToScreenCoordinates(Mouse.getX(), Mouse.getY());
+		return Vector2f.sub(getMousePosition(), getPlayerScreenPosition(), null);
+	}
 
-		Vector2f playerScreenCoordinates = Vector2f.sub(getPlayer().getCenterPosition(), getWorldEntities()
-				.getRenderOrigin(), null);
+	private Vector2f getMousePosition()
+	{
+		return new Vector2f(Mouse.getX(), Mouse.getY());
+	}
 
-		return Vector2f.sub(mouseCoordinates, playerScreenCoordinates, null);
+	private Vector2f getPlayerScreenPosition()
+	{
+		return context.getVectorConverter().convertToPixel(getPlayer().getCenterPosition());
 	}
 
 	private void renderObjects()
@@ -265,7 +267,14 @@ public class ScrollerGame
 		}
 
 		fps++;
+
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, context.getDisplayHeight(), 0);
+		GL11.glScalef(1, -1, 1);
+
 		context.getTextFont().drawString(0, 0, Long.toString(lastFPS) + " fps", Color.white);
+
+		GL11.glPopMatrix();
 	}
 
 	/**

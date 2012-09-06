@@ -7,7 +7,7 @@ import rob.scroller.ScrollerGameContext;
 
 public class Player extends Character
 {
-	private static final float MAX_SPEED = 200;
+	private static final float MAX_SPEED = 2;
 
 	private final ScrollerGameContext context;
 
@@ -26,13 +26,13 @@ public class Player extends Character
 
 	public void moveDown()
 	{
-		velocity.setY(MAX_SPEED);
+		velocity.setY(-MAX_SPEED);
 		setVelocity(getNormalizedVelocity());
 	}
 
 	public void moveUp()
 	{
-		velocity.setY(-MAX_SPEED);
+		velocity.setY(MAX_SPEED);
 		setVelocity(getNormalizedVelocity());
 	}
 
@@ -86,9 +86,9 @@ public class Player extends Character
 	}
 
 	@Override
-	public void simulateStep()
+	public void beforeWorldStep()
 	{
-		super.simulateStep();
+		super.beforeWorldStep();
 		
 		shoot(context.getMouseAim());
 	}

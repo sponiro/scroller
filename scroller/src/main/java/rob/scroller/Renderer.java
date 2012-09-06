@@ -5,8 +5,9 @@ import org.newdawn.slick.opengl.Texture;
 
 public class Renderer implements IRenderer
 {
+
 	@Override
-	public void blit(int x, int y, Texture texture)
+	public void blit(float x, float y, float width, float height, Texture texture)
 	{
 		texture.bind();
 
@@ -16,26 +17,14 @@ public class Renderer implements IRenderer
 		GL11.glVertex2f(x, y);
 
 		GL11.glTexCoord2f(1, 0);
-		GL11.glVertex2f(x + texture.getTextureWidth(), y);
+		GL11.glVertex2f(x + width, y);
 
 		GL11.glTexCoord2f(1, 1);
-		GL11.glVertex2f(x + texture.getTextureWidth(), y + texture.getTextureHeight());
+		GL11.glVertex2f(x + width, y + height);
 
 		GL11.glTexCoord2f(0, 1);
-		GL11.glVertex2f(x, y + texture.getTextureHeight());
+		GL11.glVertex2f(x, y + height);
 
 		GL11.glEnd();
-	}
-
-	@Override
-	public void fillRectangle(int x, int y, int width, int height, Texture texture)
-	{
-		for (int left = x; left < width; left += texture.getImageWidth())
-		{
-			for (int top = y; top < height; top += texture.getImageHeight())
-			{
-				blit(left, top, texture);
-			}
-		}
 	}
 }

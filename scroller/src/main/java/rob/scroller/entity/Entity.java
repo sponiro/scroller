@@ -1,13 +1,14 @@
 package rob.scroller.entity;
 
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.opengl.Texture;
 
+import rob.scroller.IRenderer;
 import rob.scroller.ISimulationAction;
 import rob.scroller.IVectorConverter;
 import rob.scroller.ScrollerGameContext;
-import rob.scroller.VectorUtils;
 
 /**
  * Graphical entity with a position, velocity and texture
@@ -16,24 +17,42 @@ import rob.scroller.VectorUtils;
 public class Entity implements ISimulationAction
 {
 	private final ScrollerGameContext context;
-	
+
 	private Texture texture;
 	private float width;
 	private float height;
-	
+
+	private Vector2f velocity;
+
 	private boolean markedForRemoval;
-	
+
 	private Body body;
 
 	public Entity(ScrollerGameContext context)
 	{
 		this.context = context;
 		this.markedForRemoval = false;
+		this.velocity = new Vector2f();
 	}
 
 	public Vector2f getVelocity()
 	{
-		return getVectorConverter().convertToPixel(body.getLinearVelocity());
+		return velocity;
+	}
+
+	public void setVelocity(Vector2f velocity)
+	{
+		this.velocity = velocity;
+	}
+
+	protected Vector2f getBodyVelocity()
+	{
+		return new Vector2f(body.getLinearVelocity().x, body.getLinearVelocity().y);
+	}
+
+	protected void setBodyVelocity(Vector2f velocity)
+	{
+		body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
 	}
 
 	protected IVectorConverter getVectorConverter()
@@ -41,42 +60,39 @@ public class Entity implements ISimulationAction
 		return getContext().getVectorConverter();
 	}
 
-	public void setVelocity(Vector2f velocity)
-	{
-		body.setLinearVelocity(getVectorConverter().convertToMeter(velocity));
-	}
-
 	public Vector2f getPosition()
 	{
 		Vector2f position = new Vector2f();
-		position.x = getCenterPosition().x - (float) texture.getImageWidth() / 2;
-		position.y = getCenterPosition().y - (float) texture.getImageHeight() / 2;
+		position.x = getCenterPosition().x - width / 2;
+		position.y = getCenterPosition().y - height / 2;
 		return position;
 	}
 
-	public void setPosition(Vector2f position)
-	{
-		Vector2f newPosition = new Vector2f();
-		newPosition.x = getCenterPosition().x + (float) texture.getImageWidth() / 2;
-		newPosition.y = getCenterPosition().y + (float) texture.getImageHeight() / 2;
-		body.setTransform(getVectorConverter().convertToMeter(newPosition), 0);
-	}
+	// public void setPosition(Vector2f position)
+	// {
+	// Vector2f newPosition = new Vector2f();
+	// newPosition.x = getCenterPosition().x + (float) texture.getImageWidth() /
+	// 2;
+	// newPosition.y = getCenterPosition().y + (float) texture.getImageHeight()
+	// / 2;
+	// body.setTransform(getVectorConverter().convertToMeter(newPosition), 0);
+	// }
 
 	public Vector2f getCenterPosition()
 	{
-		return getVectorConverter().convertToPixel(body.getPosition());
+		return new Vector2f(body.getPosition().x, body.getPosition().y);
 	}
 
-	public void setCenterPosition(Vector2f center)
-	{
-		body.setTransform(getVectorConverter().convertToMeter(center), 0);
-	}
+	// public void setCenterPosition(Vector2f center)
+	// {
+	// body.setTransform(new Vec2(center.x, center.y), 0);
+	// }
 
-	public void render(Vector2f origin)
+	public void render(IRenderer renderer)
 	{
-		Vector2f screenCoordinates = VectorUtils.getScreenCoordinates(origin, getPosition());
+		Vector2f p = getPosition();
 
-		context.getRenderer().blit((int) screenCoordinates.getX(), (int) screenCoordinates.getY(), getTexture());
+		renderer.blit(p.x, p.y, width, height, getTexture());
 	}
 
 	public void isHitBy(Bullet bullet)
@@ -106,9 +122,14 @@ public class Entity implements ISimulationAction
 	}
 
 	@Override
-	public void simulateStep()
+	public void beforeWorldStep()
 	{
-		body.setLinearVelocity(getVectorConverter().convertToMeter(getVelocity()));
+		setBodyVelocity(velocity);
+	}
+
+	public void afterWorldStep()
+	{
+		velocity = getBodyVelocity();
 	}
 
 	public Body getBody()

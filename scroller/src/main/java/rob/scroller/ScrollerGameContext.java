@@ -52,13 +52,13 @@ public class ScrollerGameContext
 
 	public void loadAndInit() throws IOException, SlickException
 	{
-		floorTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/floor.png"));
-		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player2.png"));
-		enemyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy.png"));
-		emptyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/empty.png"));
-		bulletTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/bullet.png"));
+		floorTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/floor.png"), true);
+		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player2.png"), true);
+		enemyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy.png"), true);
+		emptyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/empty.png"), true);
+		bulletTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/bullet.png"), true);
 
-		textFont = new UnicodeFont(new Font("Times New Roman", Font.PLAIN, 14));
+		textFont = new UnicodeFont(new Font("Times New Roman", Font.PLAIN, 18));
 		textFont.addAsciiGlyphs();
 		textFont.getEffects().add(new ColorEffect(java.awt.Color.WHITE));
 		textFont.loadGlyphs();
@@ -83,8 +83,12 @@ public class ScrollerGameContext
 		// init OpenGL
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, displayWidth, displayHeight, 0, 1, -1);
+		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+		
+//		GL11.glViewport(0, 200, 800, 600);
+		
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
 	}
 
 	public World getWorld()
