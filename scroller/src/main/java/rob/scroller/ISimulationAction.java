@@ -4,5 +4,5 @@ public interface ISimulationAction
 {
 	void beforeWorldStep();
 
-	public abstract void afterWorldStep();
+	void afterWorldStep();
 }

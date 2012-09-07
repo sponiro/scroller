@@ -94,19 +94,19 @@ public class ScrollerGame
 	private void initGame()
 	{
 		context.getWorldFactory().createDungeon(13, 10);
-		context.getWorldFactory().createPlayer(new Vector2f(1, 2));
+		context.getWorldFactory().createPlayer(new Vector2f(7.5f, 2));
 
 		Random random = new Random();
 		for (int i = 0; i < 100; i++)
 		{
 			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
-			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.6f + 1f)));
+			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
 		}
 	}
 
 	private Vector2f randomPosition(Random random)
 	{
-		return new Vector2f(random.nextFloat() * 10, 10);
+		return new Vector2f(random.nextFloat() * 13, 10);
 	}
 
 	private void processInput()

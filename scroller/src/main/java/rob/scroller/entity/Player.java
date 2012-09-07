@@ -2,7 +2,6 @@ package rob.scroller.entity;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import rob.scroller.Character;
 import rob.scroller.ScrollerGameContext;
 
 public class Player extends Character

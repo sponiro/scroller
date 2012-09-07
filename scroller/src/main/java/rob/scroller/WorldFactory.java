@@ -167,7 +167,7 @@ public class WorldFactory
 		vTop.x = (v1.x + v2.x) / 2;
 		vBottom.x = vTop.x;
 		vTop.y = Math.max(v1.y, v2.y) + .01f;
-		vBottom.y = Math.min(v1.y, v2.y) - .01f - 1;
+		vBottom.y = Math.min(v1.y, v2.y) - .06f ;
 
 		float halfheight = Math.abs(v1.y - v2.y) / 2;
 		float halfwidth = Math.abs(v1.x - v2.x) / 2;

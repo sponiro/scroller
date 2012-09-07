@@ -1,4 +1,4 @@
-package rob.scroller;
+package rob.scroller.hit;
 
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Entity;

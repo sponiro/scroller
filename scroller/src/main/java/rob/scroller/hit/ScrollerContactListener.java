@@ -1,4 +1,4 @@
-package rob.scroller;
+package rob.scroller.hit;
 
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;

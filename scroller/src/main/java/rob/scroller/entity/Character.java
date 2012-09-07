@@ -1,7 +1,6 @@
-package rob.scroller;
+package rob.scroller.entity;
 
-import rob.scroller.entity.Bullet;
-import rob.scroller.entity.Entity;
+import rob.scroller.ScrollerGameContext;
 
 public class Character extends Entity
 {

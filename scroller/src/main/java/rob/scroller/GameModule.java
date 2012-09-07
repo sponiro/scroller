@@ -2,6 +2,10 @@ package rob.scroller;
 
 import org.jbox2d.callbacks.ContactListener;
 
+import rob.scroller.hit.BulletHitListener;
+import rob.scroller.hit.IBulletHitListener;
+import rob.scroller.hit.ScrollerContactListener;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
