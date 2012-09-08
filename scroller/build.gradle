@@ -16,20 +16,26 @@ dependencies {
 	compile fileTree(dir: 'lib', include: '*.jar')
 }
 
+def getPlatformNativeDir(def platform)
+{
+	"$buildDir/natives/$platform"
+}
+
 def platforms = ['windows', 'linux', 'osx']
+
 platforms.each { platform ->
+	
 	task "${platform}Natives" {
-		def outputDir = "$buildDir/natives/$platform"
-		inputs.files(configurations.compile)
-		outputs.dir(outputDir)
-		doLast {
+		
+		outputs.dir getPlatformNativeDir(platform) 
+		
+		doLast {	
 			copy {
 				def artifacts = configurations.compile.resolvedConfiguration.resolvedArtifacts
-						.findAll { it.classifier == "natives-$platform" }
-				artifacts.each {
-					from zipTree(it.file)
-				}
-				into outputDir
+					.findAll { it.classifier == "natives-$platform" }
+				
+				artifacts.each { from zipTree(it.file) }
+				into getPlatformNativeDir(platform)
 			}
 		}
 	}
@@ -37,11 +43,12 @@ platforms.each { platform ->
 
 task natives {
 	description "Copies native libraries to an appropriate directory."
-	dependsOn platforms.collect { "${it}Natives" }.findAll { tasks[it] }
+	
+	def nativeTasks = platforms.collect { "${it}Natives" }.findAll { tasks[it] }.collect{ tasks[it] }
+	
+	dependsOn nativeTasks
 
-	platforms.collect { "${it}Natives" }.findAll { tasks[it] }.collect{ tasks[it] }.
-	collect { it.outputs.files }.findAll() {
-		it.each { outputs.dir it }	}
+	nativeTasks.collect { it.outputs.files }.findAll { it.each { outputs.file it } }
 }
 
 processResources.dependsOn natives
@@ -49,20 +56,12 @@ processResources.dependsOn natives
 // make the task "installApp" create a working application and put the natives in the executable directory
 // yes, this is not really nice but works for now
 applicationDistribution.from(natives) { into "bin" }
-//applicationDistribution.from(natives) { into "lib/natives" }
 
 // make the task "run" work
-run.jvmArgs("-Djava.library.path=" + platforms.collect { platform -> "$buildDir/natives/$platform" }.join(File.pathSeparator))
+run.jvmArgs("-Djava.library.path=" + platforms.collect { platform -> getPlatformNativeDir(platform) }.join(File.pathSeparator))
 
 eclipse {
-
 	classpath {
-
-		//		file.withXml {
-		//			def node = it.asNode()
-		//			node.appendNode('classpathentry', ['kind':'lib', 'path':'lib/natives'])
-		//		}
-
 		downloadSources = true
 		downloadJavadoc = true
 	}
@@ -70,10 +69,15 @@ eclipse {
 
 // handle eclipse configuration with native libs
 // you have to add these natives to your launch configuration
+tasks['eclipse'].dependsOn natives
 tasks['eclipse'].doLast {
-	copy {
-		from natives
-		into "lib/natives"
+	
+	platforms.each { platform ->
+		copy {
+			from getPlatformNativeDir(platform)
+			into "lib/natives/$platform"
+		}
 	}
 }
+
 
