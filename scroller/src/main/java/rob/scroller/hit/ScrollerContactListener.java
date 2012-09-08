@@ -5,6 +5,7 @@ import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.dynamics.contacts.Contact;
 
+import rob.scroller.entity.Border;
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Entity;
 
@@ -37,29 +38,31 @@ public final class ScrollerContactListener implements ContactListener
 
 	public void beginContact(Contact contact)
 	{
-		if (contact.getFixtureA().getBody().getUserData() instanceof Bullet)
+		Object userDataA = contact.getFixtureA().getBody().getUserData();
+		Object userDataB = contact.getFixtureB().getBody().getUserData();
+
+		beginUserDataContact(userDataA, userDataB);
+		beginUserDataContact(userDataB, userDataA);
+	}
+
+	private void beginUserDataContact(Object userDataA, Object userDataB)
+	{
+		if (userDataA instanceof Bullet)
 		{
-			if (contact.getFixtureB().getBody().getUserData() instanceof Entity)
+			if (userDataB instanceof Entity)
 			{
-				hitListener.hit((Entity) contact.getFixtureB().getBody().getUserData(), (Bullet) contact
-						.getFixtureA().getBody().getUserData());
+				hitListener.hit((Entity) userDataB, (Bullet) userDataA);
 			} else
 			{
-				Bullet bullet = (Bullet) contact.getFixtureA().getBody().getUserData();
+				Bullet bullet = (Bullet) userDataA;
 				bullet.markForRemoval();
 			}
-		}
-
-		if (contact.getFixtureB().getBody().getUserData() instanceof Bullet)
+		} else if (userDataA instanceof Border)
 		{
-			if (contact.getFixtureA().getBody().getUserData() instanceof Entity)
+			if (userDataB instanceof Entity)
 			{
-				hitListener.hit((Entity) contact.getFixtureA().getBody().getUserData(), (Bullet) contact
-						.getFixtureB().getBody().getUserData());
-			} else
-			{
-				Bullet bullet = (Bullet) contact.getFixtureB().getBody().getUserData();
-				bullet.markForRemoval();
+				Entity entity = (Entity) userDataB;
+				entity.markForRemoval();
 			}
 		}
 	}

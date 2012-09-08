@@ -16,7 +16,7 @@ import rob.scroller.ScrollerGameContext;
  */
 public class Entity implements ISimulationAction
 {
-	private final ScrollerGameContext context;
+	protected final ScrollerGameContext context;
 
 	private Texture texture;
 	private float width;
@@ -28,11 +28,20 @@ public class Entity implements ISimulationAction
 
 	private Body body;
 
-	public Entity(ScrollerGameContext context)
+	public Entity(ScrollerGameContext context, Vector2f position)
 	{
 		this.context = context;
 		this.markedForRemoval = false;
 		this.velocity = new Vector2f();
+		this.width = 1;
+		this.height = 1;
+
+		createBody(position);
+	}
+
+	protected void createBody(Vector2f position)
+	{
+
 	}
 
 	public Vector2f getVelocity()
@@ -137,7 +146,7 @@ public class Entity implements ISimulationAction
 		return body;
 	}
 
-	public void setBody(Body body)
+	protected void setBody(Body body)
 	{
 		this.body = body;
 	}

@@ -39,12 +39,14 @@ public class ScrollerGame
 
 	private boolean wantsExit;
 
+	private Random random = new Random();
+
 	public void start() throws SlickException
 	{
 		context.setDisplayWidth(800);
 		context.setDisplayHeight(600);
-//		context.setDisplayWidth(1000);
-//		context.setDisplayHeight(750);
+		// context.setDisplayWidth(1000);
+		// context.setDisplayHeight(750);
 
 		try
 		{
@@ -96,12 +98,12 @@ public class ScrollerGame
 		context.getWorldFactory().createDungeon(13, 10);
 		context.getWorldFactory().createPlayer(new Vector2f(7.5f, 2));
 
-		Random random = new Random();
-		for (int i = 0; i < 100; i++)
-		{
-			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
-			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
-		}
+		
+//		for (int i = 0; i < 100; i++)
+//		{
+//			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
+//			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
+//		}
 	}
 
 	private Vector2f randomPosition(Random random)
@@ -194,8 +196,9 @@ public class ScrollerGame
 		{
 			long now = lastWorldTime + (long) (context.getWorldTimestep() * 1000);
 			context.setNowInMilliseconds(now);
-
 			context.setMouseAim(getMouseAim());
+
+			createEnemies();
 
 			getWorldEntities().beforeWorldStep();
 
@@ -207,6 +210,15 @@ public class ScrollerGame
 		}
 
 		removeDeadEntities();
+	}
+
+	private void createEnemies()
+	{
+		if (random.nextFloat() < 0.02f)
+		{
+			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
+			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
+		}
 	}
 
 	private void removeDeadEntities()

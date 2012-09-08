@@ -1,14 +1,13 @@
 package rob.scroller;
 
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.util.vector.Vector2f;
 
+import rob.scroller.entity.Border;
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Player;
@@ -27,116 +26,36 @@ public class WorldFactory
 
 	public Player createPlayer(Vector2f position)
 	{
-		Player player = new Player(context);
+		Player player = new Player(context, position);
 		player.setTexture(context.getPlayerTexture());
-		player.setWidth(1);
-		player.setHeight(1);
-
-		player.setBody(createPlayerBody(position));
-		player.getBody().setUserData(player);
 
 		context.getWorldEntities().setPlayer(player);
 
 		return player;
 	}
 
-	private Body createPlayerBody(Vector2f position)
-	{
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DYNAMIC;
-		bodyDef.position = new Vec2(position.x, position.y);
-
-		PolygonShape playerBox = new PolygonShape();
-		playerBox.setAsBox(1f / 2, 1f / 2);
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = playerBox;
-		fixtureDef.density = 1;
-		fixtureDef.friction = 0;
-		fixtureDef.restitution = 0;
-		fixtureDef.filter.categoryBits = 1;
-		fixtureDef.filter.maskBits = 8;
-
-		Body body = context.getWorld().createBody(bodyDef);
-		body.createFixture(fixtureDef);
-
-		return body;
-	}
-
 	public Enemy createEnemy(Vector2f position)
 	{
-		Enemy enemy = new Enemy(context);
+		Enemy enemy = new Enemy(context, position);
 		enemy.setTexture(context.getEnemyTexture());
 		enemy.setWidth(1);
 		enemy.setHeight(1);
-
-		enemy.setBody(createEnemyBody(position));
-		enemy.getBody().setUserData(enemy);
 
 		context.getWorldEntities().addEnemy(enemy);
 
 		return enemy;
 	}
-
-	private Body createEnemyBody(Vector2f position)
-	{
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DYNAMIC;
-		bodyDef.position = new Vec2(position.x, position.y);
-
-		PolygonShape playerBox = new PolygonShape();
-		playerBox.setAsBox(1f / 2, 1f / 2);
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = playerBox;
-		fixtureDef.density = 1;
-		fixtureDef.friction = 0;
-		fixtureDef.restitution = 0;
-		fixtureDef.filter.categoryBits = 2;
-		fixtureDef.filter.maskBits = 4 | 8;
-
-		Body body = context.getWorld().createBody(bodyDef);
-		body.createFixture(fixtureDef);
-
-		return body;
-	}
-
+	
 	public Bullet createBullet(Vector2f position)
 	{
-		Bullet bullet = new Bullet(context);
+		Bullet bullet = new Bullet(context, position);
 		bullet.setTexture(context.getBulletTexture());
-		bullet.setWidth(.5f);
-		bullet.setHeight(.5f);
+		bullet.setWidth(.25f);
+		bullet.setHeight(.25f);
 		
-		bullet.setBody(createBulletBody(position));
-		bullet.getBody().setUserData(bullet);
-
 		context.getWorldEntities().addBullet(bullet);
 
 		return bullet;
-	}
-
-	private Body createBulletBody(Vector2f position)
-	{
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DYNAMIC;
-		bodyDef.position = new Vec2(position.x, position.y);
-		bodyDef.bullet = true;
-
-		CircleShape circleShape = new CircleShape();
-		circleShape.m_radius = 1f / 4;
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = circleShape;
-		fixtureDef.restitution = 0;
-		fixtureDef.isSensor = true;
-		fixtureDef.filter.categoryBits = 4;
-		fixtureDef.filter.maskBits = 2 | 8;
-
-		Body body = context.getWorld().createBody(bodyDef);
-		body.createFixture(fixtureDef);
-
-		return body;
 	}
 
 	public Dungeon createDungeon(int columns, int rows)
@@ -167,7 +86,7 @@ public class WorldFactory
 		vTop.x = (v1.x + v2.x) / 2;
 		vBottom.x = vTop.x;
 		vTop.y = Math.max(v1.y, v2.y) + .01f;
-		vBottom.y = Math.min(v1.y, v2.y) - .06f ;
+		vBottom.y = Math.min(v1.y, v2.y) - 1.06f ;
 
 		float halfheight = Math.abs(v1.y - v2.y) / 2;
 		float halfwidth = Math.abs(v1.x - v2.x) / 2;
@@ -175,10 +94,11 @@ public class WorldFactory
 		createBorder(vRight, .01f, halfheight);
 		createBorder(vLeft, .01f, halfheight);
 		createBorder(vTop, halfwidth, .01f);
-		createBorder(vBottom, halfwidth, .01f);
+		Body bottomBodyBorder = createBorder(vBottom, halfwidth, .01f);
+		bottomBodyBorder.setUserData(new Border());		
 	}
 
-	private void createBorder(Vec2 position, float halfwidth, float halfheight)
+	private Body createBorder(Vec2 position, float halfwidth, float halfheight)
 	{
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.position.set(position);
@@ -194,5 +114,7 @@ public class WorldFactory
 		fixtureDef.filter.maskBits = 0xffff;
 
 		body.createFixture(fixtureDef);
+		
+		return body;
 	}
 }

@@ -1,15 +1,17 @@
 package rob.scroller.entity;
 
+import org.lwjgl.util.vector.Vector2f;
+
 import rob.scroller.ScrollerGameContext;
 
 public class Character extends Entity
 {
 	private int life;
 
-	public Character(ScrollerGameContext context)
+	public Character(ScrollerGameContext context, Vector2f position)
 	{
-		super(context);
-		
+		super(context, position);
+
 		this.life = 2;
 	}
 
@@ -27,14 +29,15 @@ public class Character extends Entity
 	public void isHitBy(Bullet bullet)
 	{
 		life = life - bullet.getDamage();
-		
+
 		bullet.markForRemoval();
 		checkForDeath();
 	}
 
 	private void checkForDeath()
 	{
-		if (life <= 0) {
+		if (life <= 0)
+		{
 			markForRemoval();
 		}
 	}
