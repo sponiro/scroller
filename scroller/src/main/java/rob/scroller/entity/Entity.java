@@ -7,7 +7,6 @@ import org.newdawn.slick.opengl.Texture;
 
 import rob.scroller.IRenderer;
 import rob.scroller.ISimulationAction;
-import rob.scroller.IVectorConverter;
 import rob.scroller.ScrollerGameContext;
 
 /**
@@ -62,11 +61,6 @@ public class Entity implements ISimulationAction
 	protected void setBodyVelocity(Vector2f velocity)
 	{
 		body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
-	}
-
-	protected IVectorConverter getVectorConverter()
-	{
-		return getContext().getVectorConverter();
 	}
 
 	public Vector2f getPosition()

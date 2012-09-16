@@ -5,14 +5,23 @@ import java.util.List;
 
 public class Dungeon
 {
+	private static final float SPEED = 1.5f;
+
 	private final ScrollerGameContext context;
 
 	private int rows;
 	private int columns;
 
-	/* list of rows containing floor tiles */
 	private List<List<Floor>> floorTiles;
 
+	private int totalRows;
+	private long start;
+
+	/**
+	 * @param context
+	 * @param columns
+	 * @param rows
+	 */
 	public Dungeon(ScrollerGameContext context, int columns, int rows)
 	{
 		this.context = context;
@@ -20,7 +29,10 @@ public class Dungeon
 		this.rows = rows;
 
 		this.floorTiles = new ArrayList<List<Floor>>(rows);
-		for (int r = 0; r < rows; r++)
+		
+		totalRows = 2 * rows;
+		
+		for (int r = 0; r < totalRows; r++)
 		{
 			ArrayList<Floor> row = new ArrayList<Floor>(columns);
 
@@ -28,11 +40,17 @@ public class Dungeon
 			{
 				Floor floor = new Floor();
 				floor.setTexture(context.getFloorTexture());
+
 				row.add(floor);
 			}
 
 			floorTiles.add(row);
 		}
+	}
+
+	public void resetToStart()
+	{
+		start = context.getNowInMilliseconds();
 	}
 
 	public int getColumns()
@@ -47,19 +65,49 @@ public class Dungeon
 
 	public void render(IRenderer renderer)
 	{
-		for (int col = 0; col < columns; col++) {
-			
-			for (int row = 0; row < rows; row++)
+		for (int col = 0; col < columns; col++)
+		{
+			for (int rowOffset = 0; rowOffset <= rows; rowOffset++)
 			{
-				Floor tile = getTile(col, row);
+				int currentRow = getCurrentRow(rowOffset);
 				
-				renderer.blit(col, row, 1, 1, tile.getTexture());				
+				Floor floor = getTile(col, currentRow);
+
+				renderer.blit(col, rowToCoord(currentRow), 1, 1, floor.getTexture());
 			}
 		}
 	}
 
+	/** 
+	 * Calculates the screen coordinate to start painting from
+	 * 
+	 * @param row
+	 * @return
+	 */
+	private float rowToCoord(int row)
+	{
+		return row - getCurrentOffset();
+	}
+
+	private int getCurrentRow(int rowOffset)
+	{
+		return (int) getCurrentOffset() + rowOffset;
+	}
+
+	private float getCurrentOffset()
+	{
+		return SPEED * getTimeDelta() / 1000;
+	}
+
+	private long getTimeDelta()
+	{
+		return context.getNowInMilliseconds() - start;
+	}
+
 	public Floor getTile(int col, int row)
 	{
+		row = row % totalRows;
+		
 		if (row < 0 || row >= floorTiles.size())
 		{
 			return getDefaultFloor();

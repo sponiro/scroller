@@ -16,7 +16,6 @@ public class GameModule extends AbstractModule
 	protected void configure()
 	{
 		bind(IRenderer.class).to(Renderer.class);
-		bind(IVectorConverter.class).to(VectorConverter.class);
 		bind(WorldFactory.class);
 		
 		bind(ContactListener.class).to(ScrollerContactListener.class);

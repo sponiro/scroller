@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
@@ -34,7 +33,6 @@ public class ScrollerGameContext
 
 	private long nowInMilliseconds;
 
-	private IVectorConverter vectorConverter;
 	private IRenderer renderer;
 	private WorldFactory worldFactory;
 	private WorldEntities worldEntities;
@@ -53,7 +51,7 @@ public class ScrollerGameContext
 	public void loadAndInit() throws IOException, SlickException
 	{
 		floorTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/floor.png"), true);
-		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player2.png"), true);
+		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player.png"), true);
 		enemyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy.png"), true);
 		emptyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/empty.png"), true);
 		bulletTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/bullet.png"), true);
@@ -62,33 +60,6 @@ public class ScrollerGameContext
 		textFont.addAsciiGlyphs();
 		textFont.getEffects().add(new ColorEffect(java.awt.Color.WHITE));
 		textFont.loadGlyphs();
-
-		initGL();
-	}
-
-	private void initGL()
-	{
-		// enable textures
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		// GL11.glShadeModel(GL11.GL_SMOOTH);
-		// GL11.glDisable(GL11.GL_DEPTH_TEST);
-		// GL11.glDisable(GL11.GL_LIGHTING);
-		// GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		// GL11.glClearDepth(1);
-
-		// init OpenGL
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
-		
-//		GL11.glViewport(0, 200, 800, 600);
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
 	}
 
 	public World getWorld()
@@ -175,17 +146,6 @@ public class ScrollerGameContext
 	public long getNowInMilliseconds()
 	{
 		return nowInMilliseconds;
-	}
-
-	public IVectorConverter getVectorConverter()
-	{
-		return vectorConverter;
-	}
-
-	@Inject
-	public void setVectorConverter(IVectorConverter vectorConverter)
-	{
-		this.vectorConverter = vectorConverter;
 	}
 
 	public WorldFactory getWorldFactory()

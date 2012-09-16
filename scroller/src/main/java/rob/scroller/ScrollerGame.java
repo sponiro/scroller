@@ -1,9 +1,12 @@
 package rob.scroller;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -11,6 +14,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
@@ -25,6 +29,7 @@ import com.google.inject.Injector;
 
 public class ScrollerGame
 {
+	private final float TILE_SIZE = 50;
 	private ScrollerGameContext context;
 
 	/** frames per second */
@@ -40,13 +45,16 @@ public class ScrollerGame
 	private boolean wantsExit;
 
 	private Random random = new Random();
+	private FloatBuffer modelBuffer;
+	private FloatBuffer projectionBuffer;
+	private IntBuffer viewBuffer;
 
 	public void start() throws SlickException
 	{
-		context.setDisplayWidth(800);
-		context.setDisplayHeight(600);
-		// context.setDisplayWidth(1000);
-		// context.setDisplayHeight(750);
+		 context.setDisplayWidth(800);
+		 context.setDisplayHeight(600);
+//		context.setDisplayWidth(1000);
+//		context.setDisplayHeight(750);
 
 		try
 		{
@@ -72,8 +80,10 @@ public class ScrollerGame
 		setFrameTime();
 		lastFPSTime = getTime(); // call before loop to initialise fps timer
 		lastWorldTime = lastFPSTime;
+		context.setNowInMilliseconds(lastWorldTime);
 
 		initGame();
+		initGL();
 
 		wantsExit = false;
 
@@ -93,22 +103,38 @@ public class ScrollerGame
 		Display.destroy();
 	}
 
+	private void initGL()
+	{
+		// enable textures
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+		// GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+		// init OpenGL
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
+		modelBuffer = BufferUtils.createFloatBuffer(16);
+		projectionBuffer = BufferUtils.createFloatBuffer(16);
+		viewBuffer = BufferUtils.createIntBuffer(16);
+	}
+
 	private void initGame()
 	{
-		context.getWorldFactory().createDungeon(13, 10);
-		context.getWorldFactory().createPlayer(new Vector2f(7.5f, 2));
-
-		
-//		for (int i = 0; i < 100; i++)
-//		{
-//			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
-//			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
-//		}
+		context.getWorldFactory().createDungeon(16, 12);
+		context.getWorldFactory().createPlayer(new Vector2f(8f, 2));
+		context.getWorldEntities().getDungeon().resetToStart();
 	}
 
 	private Vector2f randomPosition(Random random)
 	{
-		return new Vector2f(random.nextFloat() * 13, 10);
+		return new Vector2f(random.nextFloat() * 15 + .5f, 10);
 	}
 
 	private void processInput()
@@ -214,7 +240,7 @@ public class ScrollerGame
 
 	private void createEnemies()
 	{
-		if (random.nextFloat() < 0.02f)
+		if (random.nextFloat() < 0.2f)
 		{
 			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
 			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
@@ -254,14 +280,52 @@ public class ScrollerGame
 
 	private Vector2f getPlayerScreenPosition()
 	{
-		return context.getVectorConverter().convertToPixel(getPlayer().getCenterPosition());
+		return project(getPlayer().getCenterPosition());
+	}
+
+	private Vector2f unproject(Vector2f vector)
+	{
+		FloatBuffer pos = BufferUtils.createFloatBuffer(3);
+
+		boolean result = GLU.gluUnProject(vector.x, vector.y, 1, modelBuffer, projectionBuffer, viewBuffer, pos);
+
+		if (result)
+		{
+			return new Vector2f(pos.get(0), pos.get(1));
+		} else
+		{
+			return new Vector2f();
+		}
+	}
+
+	private Vector2f project(Vector2f vector)
+	{
+		FloatBuffer pos = BufferUtils.createFloatBuffer(3);
+
+		boolean result = GLU.gluProject(vector.x, vector.y, 1f, modelBuffer, projectionBuffer, viewBuffer, pos);
+
+		if (result)
+		{
+			return new Vector2f(pos.get(0), pos.get(1));
+		} else
+		{
+			return new Vector2f();
+		}
 	}
 
 	private void renderObjects()
 	{
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glPushMatrix();
+		GL11.glScalef(TILE_SIZE, TILE_SIZE, 1);
+
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelBuffer);
+		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionBuffer);
+		GL11.glGetInteger(GL11.GL_VIEWPORT, viewBuffer);
 
 		getWorldEntities().render();
+
+		GL11.glPopMatrix();
 
 		updateFPS();
 	}
@@ -281,7 +345,7 @@ public class ScrollerGame
 		fps++;
 
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0, context.getDisplayHeight(), 0);
+		GL11.glTranslatef(0, 600, 0);
 		GL11.glScalef(1, -1, 1);
 
 		context.getTextFont().drawString(0, 0, Long.toString(lastFPS) + " fps", Color.white);

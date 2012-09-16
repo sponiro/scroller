@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Entity;
@@ -39,9 +37,6 @@ public class WorldEntities implements ISimulationAction
 
 	public void render()
 	{
-		GL11.glPushMatrix();
-		GL11.glScalef(64, 64, 1);
-
 		dungeon.render(context.getRenderer());
 
 		for (Entity entity : getEntities())
@@ -50,8 +45,6 @@ public class WorldEntities implements ISimulationAction
 		}
 
 		player.render(context.getRenderer());
-		
-		GL11.glPopMatrix();
 	}
 
 	public Iterable<Entity> getEntities()
