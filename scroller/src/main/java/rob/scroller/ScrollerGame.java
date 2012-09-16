@@ -30,6 +30,7 @@ import com.google.inject.Injector;
 public class ScrollerGame
 {
 	private final float TILE_SIZE = 50;
+	
 	private ScrollerGameContext context;
 
 	/** frames per second */
@@ -39,15 +40,14 @@ public class ScrollerGame
 	private long lastFPSTime;
 	private int lastFPS;
 
-	private long lastFrameTime;
-	private long lastWorldTime;
-
 	private boolean wantsExit;
 
 	private Random random = new Random();
 	private FloatBuffer modelBuffer;
 	private FloatBuffer projectionBuffer;
 	private IntBuffer viewBuffer;
+
+	private WorldStepCounter worldStepCounter;
 
 	public void start() throws SlickException
 	{
@@ -77,20 +77,19 @@ public class ScrollerGame
 			System.exit(1);
 		}
 
-		setFrameTime();
-		lastFPSTime = getTime(); // call before loop to initialise fps timer
-		lastWorldTime = lastFPSTime;
-		context.setNowInMilliseconds(lastWorldTime);
-
 		initGame();
 		initGL();
+		
+		worldStepCounter = new WorldStepCounter(context.getWorldTimestep());
+		worldStepCounter.reset(getTime());
+		
+		lastFPSTime = worldStepCounter.getWorldTime();
+		context.setNowInMilliseconds(worldStepCounter.getWorldTime());
 
 		wantsExit = false;
 
 		while (!Display.isCloseRequested() && !wantsExit)
 		{
-			setFrameTime();
-
 			processInput();
 			simulateWorld();
 			renderObjects();
@@ -98,6 +97,8 @@ public class ScrollerGame
 			// sleep to keep 60 fps
 			Display.sync(60);
 			Display.update();
+			
+			worldStepCounter.updateCurrentTime(getTime());
 		}
 
 		Display.destroy();
@@ -218,21 +219,20 @@ public class ScrollerGame
 		// we use fixed timesteps for physics
 		// physics simulation lags behind frame rendering
 		// several simulation steps might be necessary between renders
-		while (lastFrameTime - lastWorldTime >= context.getWorldTimestep())
+		while (worldStepCounter.needsStep())
 		{
-			long now = lastWorldTime + (long) (context.getWorldTimestep() * 1000);
-			context.setNowInMilliseconds(now);
 			context.setMouseAim(getMouseAim());
 
 			createEnemies();
 
 			getWorldEntities().beforeWorldStep();
 
+			worldStepCounter.step();
+			context.setNowInMilliseconds(worldStepCounter.getWorldTime());
+			
 			context.getWorld().step(context.getWorldTimestep(), 8, 3);
 
 			getWorldEntities().afterWorldStep();
-
-			lastWorldTime = now;
 		}
 
 		removeDeadEntities();
@@ -298,6 +298,12 @@ public class ScrollerGame
 		}
 	}
 
+	/**
+	 * Project a vector from world coordinates to screen coordinates.
+	 * 
+	 * @param vector
+	 * @return
+	 */
 	private Vector2f project(Vector2f vector)
 	{
 		FloatBuffer pos = BufferUtils.createFloatBuffer(3);
@@ -364,19 +370,11 @@ public class ScrollerGame
 	}
 
 	/**
-	 * Calculate how many milliseconds have passed since last frame.
+	 * Main entry point for scroller
 	 * 
-	 * @return milliseconds passed since last frame
+	 * @param argv
+	 * @throws SlickException
 	 */
-	private int setFrameTime()
-	{
-		long time = getTime();
-		int delta = (int) (time - lastFrameTime);
-		lastFrameTime = time;
-
-		return delta;
-	}
-
 	public static void main(String[] argv) throws SlickException
 	{
 		Injector injector = Guice.createInjector(new GameModule());

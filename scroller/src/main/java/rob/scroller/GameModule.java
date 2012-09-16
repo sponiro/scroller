@@ -9,6 +9,10 @@ import rob.scroller.hit.ScrollerContactListener;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
+/**
+ * Guice module
+ * 
+ */
 public class GameModule extends AbstractModule
 {
 
