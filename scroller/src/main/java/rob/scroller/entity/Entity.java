@@ -81,10 +81,9 @@ public abstract class Entity implements ISimulationAction
 		renderer.blitClamped(p.x, p.y, width, height, getTexture());
 	}
 
-	public void isHitBy(Bullet bullet)
+	public void isHitBy(Entity entity)
 	{
-		markForRemoval();
-		bullet.markForRemoval();
+		
 	}
 
 	public boolean isMarkedForRemoval()
@@ -110,13 +109,13 @@ public abstract class Entity implements ISimulationAction
 	@Override
 	public void beforeWorldStep()
 	{
-		
+
 	}
 
 	@Override
 	public void afterWorldStep()
 	{
-		
+
 	}
 
 	public Body getBody()

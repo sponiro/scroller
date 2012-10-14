@@ -54,6 +54,7 @@ public class ScrollerGameContext
 		world.setContactListener(contactListener);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void loadAndInit() throws IOException, SlickException
 	{
 		floorTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/floor.png"), true);

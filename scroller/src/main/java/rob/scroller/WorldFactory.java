@@ -7,8 +7,10 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.util.vector.Vector2f;
 
+import rob.scroller.entity.Border;
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
+import rob.scroller.entity.EnemyBullet;
 import rob.scroller.entity.Player;
 import rob.scroller.entity.SmallEnemy;
 
@@ -70,6 +72,18 @@ public class WorldFactory
 		return bullet;
 	}
 
+	public Bullet createEnemyBullet(Vector2f position)
+	{
+		EnemyBullet bullet = new EnemyBullet(context, position);
+		bullet.setTexture(context.getBulletTexture());
+		bullet.setWidth(.25f);
+		bullet.setHeight(.25f);
+
+		context.getWorldEntities().addBullet(bullet);
+
+		return bullet;
+	}
+
 	public Dungeon createDungeon(int columns, int rows)
 	{
 		Dungeon dungeon = new Dungeon(context, columns, rows);
@@ -81,34 +95,40 @@ public class WorldFactory
 		return dungeon;
 	}
 
-	private void createDungeonBorder(Dungeon dungeon)
+	private void createDungeonBorder(float width, float height, float distance, float borderWidth)
 	{
 		Vec2 v1 = new Vec2();
-		Vec2 v2 = new Vec2(dungeon.getColumns(), dungeon.getRows());
+		Vec2 v2 = new Vec2(width, height);
+
+		float halfBorderWidth = borderWidth / 2;
+		float halfheight = Math.abs(v1.y - v2.y) / 2 + distance + borderWidth;
+		float halfwidth = Math.abs(v1.x - v2.x) / 2 + distance + borderWidth;
+
+		Vec2 vRight = new Vec2();
+		vRight.x = Math.max(v1.x, v2.x) + halfBorderWidth + distance;
+		vRight.y = (v1.y + v2.y) / 2;
 
 		Vec2 vLeft = new Vec2();
-		Vec2 vRight = new Vec2();
-		vRight.x = Math.max(v1.x, v2.x) + .01f;
-		vLeft.x = Math.min(v1.x, v2.x) - .01f;
-		vRight.y = (v1.y + v2.y) / 2;
+		vLeft.x = Math.min(v1.x, v2.x) - halfBorderWidth - distance;
 		vLeft.y = vRight.y;
 
 		Vec2 vTop = new Vec2();
-		Vec2 vBottom = new Vec2();
 		vTop.x = (v1.x + v2.x) / 2;
+		vTop.y = Math.max(v1.y, v2.y) + halfBorderWidth + distance;
+
+		Vec2 vBottom = new Vec2();
 		vBottom.x = vTop.x;
-		vTop.y = Math.max(v1.y, v2.y) + .01f;
-		vBottom.y = Math.min(v1.y, v2.y) - 1.06f;
+		vBottom.y = Math.min(v1.y, v2.y) - halfBorderWidth - distance;
 
-		float halfheight = Math.abs(v1.y - v2.y) / 2;
-		float halfwidth = Math.abs(v1.x - v2.x) / 2;
+		createBorder(vRight, halfBorderWidth, halfheight);
+		createBorder(vLeft, halfBorderWidth, halfheight);
+		createBorder(vTop, halfwidth, halfBorderWidth);
+		createBorder(vBottom, halfwidth, halfBorderWidth);
+	}
 
-		createBorder(vRight, .01f, halfheight);
-		createBorder(vLeft, .01f, halfheight);
-		createBorder(vTop, halfwidth, .01f);
-		createBorder(vBottom, halfwidth, .01f);
-//		Body bottomBodyBorder = createBorder(vBottom, halfwidth, .01f);
-//		bottomBodyBorder.setUserData(new Border());
+	private void createDungeonBorder(Dungeon dungeon)
+	{
+		createDungeonBorder(dungeon.getColumns(), dungeon.getRows(), 1, 1);
 	}
 
 	private Body createBorder(Vec2 position, float halfwidth, float halfheight)
@@ -127,6 +147,7 @@ public class WorldFactory
 		fixtureDef.filter.maskBits = 0xffff;
 
 		body.createFixture(fixtureDef);
+		body.setUserData(new Border(context, new Vector2f()));
 
 		return body;
 	}

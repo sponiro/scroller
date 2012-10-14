@@ -38,7 +38,7 @@ public class Player extends Character
 		fixtureDef.friction = 0;
 		fixtureDef.restitution = 0;
 		fixtureDef.filter.categoryBits = 1;
-		fixtureDef.filter.maskBits = 8;
+		fixtureDef.filter.maskBits = 4 | 8;
 
 		Body body = context.getWorld().createBody(bodyDef);
 		body.createFixture(fixtureDef);

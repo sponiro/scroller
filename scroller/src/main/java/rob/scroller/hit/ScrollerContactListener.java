@@ -5,20 +5,16 @@ import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.dynamics.contacts.Contact;
 
-import rob.scroller.entity.Border;
-import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Entity;
 
 import com.google.inject.Inject;
 
 public final class ScrollerContactListener implements ContactListener
 {
-	private final IBulletHitListener hitListener;
 
 	@Inject
-	public ScrollerContactListener(IBulletHitListener bulletHitListener)
+	public ScrollerContactListener()
 	{
-		this.hitListener = bulletHitListener;
 	}
 
 	public void preSolve(Contact contact, Manifold oldManifold)
@@ -42,27 +38,19 @@ public final class ScrollerContactListener implements ContactListener
 		Object userDataB = contact.getFixtureB().getBody().getUserData();
 
 		beginUserDataContact(userDataA, userDataB);
-		beginUserDataContact(userDataB, userDataA);
 	}
 
 	private void beginUserDataContact(Object userDataA, Object userDataB)
 	{
-		if (userDataA instanceof Bullet)
+		if (userDataA instanceof Entity && userDataB instanceof Entity)
 		{
-			if (userDataB instanceof Entity)
+			Entity e1 = (Entity) userDataA;
+			Entity e2 = (Entity) userDataB;
+
+			if (!e1.isMarkedForRemoval() && !e2.isMarkedForRemoval())
 			{
-				hitListener.hit((Entity) userDataB, (Bullet) userDataA);
-			} else
-			{
-				Bullet bullet = (Bullet) userDataA;
-				bullet.markForRemoval();
-			}
-		} else if (userDataA instanceof Border)
-		{
-			if (userDataB instanceof Entity)
-			{
-				Entity entity = (Entity) userDataB;
-				entity.markForRemoval();
+				e1.isHitBy(e2);
+				e2.isHitBy(e1);
 			}
 		}
 	}

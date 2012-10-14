@@ -394,6 +394,8 @@ public class ScrollerGame
 		GL11.glScalef(1, -1, 1);
 
 		context.getTextFont().drawString(0, 0, Long.toString(lastFPS) + " fps", Color.white);
+		context.getTextFont().drawString(0, 20, Long.toString(context.getWorldEntities().getBullets().size()) + " bullets", Color.white);
+		context.getTextFont().drawString(0, 40, Long.toString(context.getWorldEntities().getEnemies().size()) + " enemies", Color.white);
 
 		GL11.glPopMatrix();
 	}

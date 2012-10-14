@@ -26,12 +26,16 @@ public abstract class Character extends Entity
 	}
 
 	@Override
-	public void isHitBy(Bullet bullet)
+	public void isHitBy(Entity entity)
 	{
-		life = life - bullet.getDamage();
+		if (entity instanceof Bullet)
+		{
+			Bullet bullet = (Bullet) entity;
+			
+			life = life - bullet.getDamage();
 
-		bullet.markForRemoval();
-		checkForDeath();
+			checkForDeath();
+		}
 	}
 
 	private void checkForDeath()
