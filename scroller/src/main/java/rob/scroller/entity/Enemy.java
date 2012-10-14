@@ -62,6 +62,8 @@ public class Enemy extends Character
 	{
 		if (entity instanceof Border) {
 			markForRemoval();
+		} else {
+			super.isHitBy(entity);
 		}
 	}
 }
