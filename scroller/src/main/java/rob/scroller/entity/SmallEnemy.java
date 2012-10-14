@@ -10,13 +10,13 @@ import org.lwjgl.util.vector.Vector2f;
 
 import rob.scroller.ScrollerGameContext;
 
-public class Enemy extends Character
+public class SmallEnemy extends Enemy
 {
-	public Enemy(ScrollerGameContext context, Vector2f position)
+	public SmallEnemy(ScrollerGameContext context, Vector2f position)
 	{
 		super(context, position);
 	}
-	
+
 	@Override
 	protected Body createBody(Vector2f position)
 	{
@@ -24,11 +24,16 @@ public class Enemy extends Character
 		bodyDef.type = BodyType.DYNAMIC;
 		bodyDef.position = new Vec2(position.x, position.y);
 
-		PolygonShape playerBox = new PolygonShape();
-		playerBox.setAsBox(1f / 2, 1f / 2);
+		PolygonShape box = new PolygonShape();
+
+		Vec2 v1 = new Vec2(-1f / 2, 1f / 2);
+		Vec2 v2 = new Vec2(0f, 0f);
+		Vec2 v3 = new Vec2(1f / 2, 1f / 2);
+
+		box.set(new Vec2[] { v1, v2, v3 }, 3);
 
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = playerBox;
+		fixtureDef.shape = box;
 		fixtureDef.density = 1;
 		fixtureDef.friction = 0;
 		fixtureDef.restitution = 0;
@@ -38,7 +43,7 @@ public class Enemy extends Character
 		Body body = context.getWorld().createBody(bodyDef);
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
-		
+
 		return body;
 	}
 }

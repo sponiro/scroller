@@ -17,17 +17,13 @@ public class Player extends Character
 	private boolean shooting;
 	private long lastShootTime;
 
-	private Vector2f velocity;
-
 	public Player(ScrollerGameContext context, Vector2f position)
 	{
 		super(context, position);
-
-		this.velocity = new Vector2f();
 	}
 
 	@Override
-	protected void createBody(Vector2f position)
+	protected Body createBody(Vector2f position)
 	{
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
@@ -48,68 +44,61 @@ public class Player extends Character
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
 
-		setBody(body);
+		return body;
 	}
 
 	public void moveDown()
 	{
+		Vector2f velocity = getVelocity();
 		velocity.setY(-MAX_SPEED);
-		setVelocity(getNormalizedVelocity());
+		setVelocity(velocity);
+		
+		normalizeVelocity();
 	}
 
 	public void moveUp()
 	{
+		Vector2f velocity = getVelocity();		
 		velocity.setY(MAX_SPEED);
-		setVelocity(getNormalizedVelocity());
+		setVelocity(velocity);
+		
+		normalizeVelocity();
 	}
 
 	public void stopMoveVertical()
 	{
+		Vector2f velocity = getVelocity();
 		velocity.setY(0);
-		setVelocity(getNormalizedVelocity());
+		setVelocity(velocity);
+		
+		normalizeVelocity();
 	}
 
 	public void moveRight()
 	{
+		Vector2f velocity = getVelocity();
 		velocity.setX(MAX_SPEED);
-		setVelocity(getNormalizedVelocity());
+		setVelocity(velocity);
+		
+		normalizeVelocity();
 	}
 
 	public void moveLeft()
 	{
+		Vector2f velocity = getVelocity();
 		velocity.setX(-MAX_SPEED);
-		setVelocity(getNormalizedVelocity());
+		setVelocity(velocity);
+		
+		normalizeVelocity();
 	}
 
 	public void stopMoveHorizontal()
 	{
+		Vector2f velocity = getVelocity();
 		velocity.setX(0);
-		setVelocity(getNormalizedVelocity());
-	}
-
-	private Vector2f getNormalizedVelocity()
-	{
-		Vector2f velocity = new Vector2f(this.velocity);
-
-		if (velocity.lengthSquared() > 1)
-		{
-			velocity.scale(MAX_SPEED / velocity.length());
-		}
-
-		return velocity;
-	}
-
-	@Override
-	public Vector2f getVelocity()
-	{
-		Vector2f velocity = new Vector2f(super.getVelocity());
-
-		if (velocity.lengthSquared() > 1)
-		{
-			velocity.scale(MAX_SPEED / velocity.length());
-		}
-
-		return velocity;
+		setVelocity(velocity);
+		
+		normalizeVelocity();
 	}
 
 	@Override
@@ -117,14 +106,35 @@ public class Player extends Character
 	{
 		super.beforeWorldStep();
 
-		shoot(context.getMouseAim());
+//		shoot(context.getMouseAim());
+		shoot(new Vector2f(0, 1));
+	}
+
+	private void normalizeVelocity()
+	{
+		setVelocity(getNormalizedVelocity());
+	}
+
+	private Vector2f getNormalizedVelocity()
+	{
+		Vector2f velocity = getVelocity();
+	
+		if (velocity.lengthSquared() >= 0.1)
+		{
+			velocity.scale(MAX_SPEED / velocity.length());
+		} else {
+			velocity.setX(0);
+			velocity.setY(0);
+		}
+	
+		return velocity;
 	}
 
 	private Vector2f getNormalizedBulletVector(Vector2f bulletVector)
 	{
 		Vector2f bulletVectorCopy = new Vector2f(bulletVector);
 
-		if (bulletVectorCopy.lengthSquared() > 1)
+		if (bulletVectorCopy.lengthSquared() >= 0.1)
 		{
 			bulletVectorCopy.scale(MAX_SPEED * 4 / bulletVectorCopy.length());
 		}
@@ -147,7 +157,7 @@ public class Player extends Character
 		return shooting;
 	}
 
-	public boolean nextBulletReady()
+	private boolean shootingAndBulletReady()
 	{
 		return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall();
 	}
@@ -157,16 +167,16 @@ public class Player extends Character
 		return 5 * context.getWorldTimestep() * 1000;
 	}
 
-	public long getLastShootTime()
+	private long getLastShootTime()
 	{
 		return lastShootTime;
 	}
 
-	public Bullet shoot(Vector2f bulletVector)
+	private Bullet shoot(Vector2f bulletVector)
 	{
 		Bullet bullet = null;
 
-		if (nextBulletReady())
+		if (shootingAndBulletReady())
 		{
 			bullet = context.getWorldFactory().createBullet(getCenterPosition());
 			bullet.setVelocity(getNormalizedBulletVector(bulletVector));

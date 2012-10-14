@@ -28,6 +28,12 @@ public class ScrollerGameContext
 	private Texture enemyTexture;
 	private Texture emptyTexture;
 	private Texture bulletTexture;
+	private Texture enemySimpleTexture;
+
+	public Texture getEnemySimpleTexture()
+	{
+		return enemySimpleTexture;
+	}
 
 	private UnicodeFont textFont;
 
@@ -51,8 +57,10 @@ public class ScrollerGameContext
 	public void loadAndInit() throws IOException, SlickException
 	{
 		floorTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/floor.png"), true);
-		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player.png"), true);
+//		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player.png"), true);
+		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/ship1.png"), true);
 		enemyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy.png"), true);
+		enemySimpleTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy_simple1.png"), true);
 		emptyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/empty.png"), true);
 		bulletTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/bullet.png"), true);
 

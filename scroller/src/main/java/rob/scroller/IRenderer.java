@@ -4,5 +4,7 @@ import org.newdawn.slick.opengl.Texture;
 
 public interface IRenderer
 {
-	void blit(float x, float y, float width, float height, Texture texture);
+	void blitClamped(float x, float y, float width, float height, Texture texture);
+
+	void blitRepeated(float x, float y, float width, float height, Texture texture);
 }

@@ -13,7 +13,7 @@ import rob.scroller.ScrollerGameContext;
  * Graphical entity with a position, velocity and texture
  * 
  */
-public class Entity implements ISimulationAction
+public abstract class Entity implements ISimulationAction
 {
 	protected final ScrollerGameContext context;
 
@@ -21,44 +21,27 @@ public class Entity implements ISimulationAction
 	private float width;
 	private float height;
 
-	private Vector2f velocity;
-
 	private boolean markedForRemoval;
-
 	private Body body;
 
 	public Entity(ScrollerGameContext context, Vector2f position)
 	{
 		this.context = context;
 		this.markedForRemoval = false;
-		this.velocity = new Vector2f();
 		this.width = 1;
 		this.height = 1;
 
-		createBody(position);
+		this.body = createBody(position);
 	}
 
-	protected void createBody(Vector2f position)
-	{
-
-	}
+	protected abstract Body createBody(Vector2f position);
 
 	public Vector2f getVelocity()
-	{
-		return velocity;
-	}
-
-	public void setVelocity(Vector2f velocity)
-	{
-		this.velocity = velocity;
-	}
-
-	protected Vector2f getBodyVelocity()
 	{
 		return new Vector2f(body.getLinearVelocity().x, body.getLinearVelocity().y);
 	}
 
-	protected void setBodyVelocity(Vector2f velocity)
+	public void setVelocity(Vector2f velocity)
 	{
 		body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
 	}
@@ -95,7 +78,7 @@ public class Entity implements ISimulationAction
 	{
 		Vector2f p = getPosition();
 
-		renderer.blit(p.x, p.y, width, height, getTexture());
+		renderer.blitClamped(p.x, p.y, width, height, getTexture());
 	}
 
 	public void isHitBy(Bullet bullet)
@@ -127,12 +110,13 @@ public class Entity implements ISimulationAction
 	@Override
 	public void beforeWorldStep()
 	{
-		setBodyVelocity(velocity);
+		
 	}
 
+	@Override
 	public void afterWorldStep()
 	{
-		velocity = getBodyVelocity();
+		
 	}
 
 	public Body getBody()

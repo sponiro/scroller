@@ -73,7 +73,7 @@ public class Dungeon
 				
 				Floor floor = getTile(col, currentRow);
 
-				renderer.blit(col, rowToCoord(currentRow), 1, 1, floor.getTexture());
+				renderer.blitRepeated(col, rowToCoord(currentRow), 1, 1, floor.getTexture());
 			}
 		}
 	}

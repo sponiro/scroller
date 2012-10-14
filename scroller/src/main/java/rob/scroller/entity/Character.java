@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import rob.scroller.ScrollerGameContext;
 
-public class Character extends Entity
+public abstract class Character extends Entity
 {
 	private int life;
 

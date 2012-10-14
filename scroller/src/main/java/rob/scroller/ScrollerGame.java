@@ -22,6 +22,7 @@ import org.newdawn.slick.SlickException;
 import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Entity;
 import rob.scroller.entity.Player;
+import rob.scroller.input.PlayerInput;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -30,7 +31,7 @@ import com.google.inject.Injector;
 public class ScrollerGame
 {
 	private final float TILE_SIZE = 50;
-	
+
 	private ScrollerGameContext context;
 
 	/** frames per second */
@@ -49,12 +50,14 @@ public class ScrollerGame
 
 	private WorldStepCounter worldStepCounter;
 
+	private PlayerInput playerInput = new PlayerInput();
+
 	public void start() throws SlickException
 	{
-		 context.setDisplayWidth(800);
-		 context.setDisplayHeight(600);
-//		context.setDisplayWidth(1000);
-//		context.setDisplayHeight(750);
+		context.setDisplayWidth(800);
+		context.setDisplayHeight(600);
+		// context.setDisplayWidth(1000);
+		// context.setDisplayHeight(750);
 
 		try
 		{
@@ -79,10 +82,10 @@ public class ScrollerGame
 
 		initGame();
 		initGL();
-		
+
 		worldStepCounter = new WorldStepCounter(context.getWorldTimestep());
 		worldStepCounter.reset(getTime());
-		
+
 		lastFPSTime = worldStepCounter.getWorldTime();
 		context.setNowInMilliseconds(worldStepCounter.getWorldTime());
 
@@ -97,7 +100,7 @@ public class ScrollerGame
 			// sleep to keep 60 fps
 			Display.sync(60);
 			Display.update();
-			
+
 			worldStepCounter.updateCurrentTime(getTime());
 		}
 
@@ -144,35 +147,37 @@ public class ScrollerGame
 		{
 			if (Keyboard.getEventKeyState())
 			{
-				if (Keyboard.getEventKey() == Keyboard.KEY_DOWN)
+				switch (Keyboard.getEventKey())
 				{
-					getPlayer().moveDown();
-				}
-
-				if (Keyboard.getEventKey() == Keyboard.KEY_UP)
-				{
-					getPlayer().moveUp();
-				}
-
-				if (Keyboard.getEventKey() == Keyboard.KEY_RIGHT)
-				{
-					getPlayer().moveRight();
-				}
-
-				if (Keyboard.getEventKey() == Keyboard.KEY_LEFT)
-				{
-					getPlayer().moveLeft();
+				case Keyboard.KEY_DOWN:
+					playerInput.pressDown();
+					break;
+				case Keyboard.KEY_UP:
+					playerInput.pressUp();
+					break;
+				case Keyboard.KEY_RIGHT:
+					playerInput.pressRight();
+					break;
+				case Keyboard.KEY_LEFT:
+					playerInput.pressLeft();
+					break;
 				}
 			} else
 			{
-				if (Keyboard.getEventKey() == Keyboard.KEY_DOWN || Keyboard.getEventKey() == Keyboard.KEY_UP)
+				switch (Keyboard.getEventKey())
 				{
-					getPlayer().stopMoveVertical();
-				}
-
-				if (Keyboard.getEventKey() == Keyboard.KEY_RIGHT || Keyboard.getEventKey() == Keyboard.KEY_LEFT)
-				{
-					getPlayer().stopMoveHorizontal();
+				case Keyboard.KEY_DOWN:
+					playerInput.releaseDown();
+					break;
+				case Keyboard.KEY_UP:
+					playerInput.releaseUp();
+					break;
+				case Keyboard.KEY_RIGHT:
+					playerInput.releaseRight();
+					break;
+				case Keyboard.KEY_LEFT:
+					playerInput.releaseLeft();
+					break;
 				}
 			}
 
@@ -193,6 +198,35 @@ public class ScrollerGame
 			}
 		}
 
+		switch (playerInput.getVerticalDirection())
+		{
+		case UP:
+			getPlayer().moveUp();
+			break;
+		case DOWN:
+			getPlayer().moveDown();
+			break;
+		case NONE:
+			getPlayer().stopMoveVertical();
+			break;
+		default:
+			break;
+		}
+
+		switch (playerInput.getHorizontalDirection())
+		{
+		case LEFT:
+			getPlayer().moveLeft();
+			break;
+		case RIGHT:
+			getPlayer().moveRight();
+			break;
+		case NONE:
+			getPlayer().stopMoveHorizontal();
+		default:
+			break;
+		}
+		
 		while (Mouse.next())
 		{
 			if (Mouse.getEventButton() == 0)
@@ -229,7 +263,7 @@ public class ScrollerGame
 
 			worldStepCounter.step();
 			context.setNowInMilliseconds(worldStepCounter.getWorldTime());
-			
+
 			context.getWorld().step(context.getWorldTimestep(), 8, 3);
 
 			getWorldEntities().afterWorldStep();
@@ -240,9 +274,14 @@ public class ScrollerGame
 
 	private void createEnemies()
 	{
-		if (random.nextFloat() < 0.2f)
+		if (random.nextFloat() < 0.1f)
 		{
-			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
+			// Enemy enemy =
+			// context.getWorldFactory().createEnemy(randomPosition(random));
+			// enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f +
+			// .1f)));
+
+			Enemy enemy = context.getWorldFactory().createSmallEnemy(randomPosition(random));
 			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
 		}
 	}

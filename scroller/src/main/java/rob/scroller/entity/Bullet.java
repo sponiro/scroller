@@ -22,7 +22,7 @@ public class Bullet extends Entity
 	}
 
 	@Override
-	protected void createBody(Vector2f position)
+	protected Body createBody(Vector2f position)
 	{
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
@@ -43,7 +43,7 @@ public class Bullet extends Entity
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
 
-		setBody(body);
+		return body;
 	}
 	
 	public int getDamage()

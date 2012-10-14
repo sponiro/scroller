@@ -7,10 +7,10 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.util.vector.Vector2f;
 
-import rob.scroller.entity.Border;
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Player;
+import rob.scroller.entity.SmallEnemy;
 
 import com.google.inject.Inject;
 
@@ -45,14 +45,26 @@ public class WorldFactory
 
 		return enemy;
 	}
-	
+
+	public Enemy createSmallEnemy(Vector2f position)
+	{
+		Enemy enemy = new SmallEnemy(context, position);
+		enemy.setTexture(context.getEnemySimpleTexture());
+		enemy.setWidth(1);
+		enemy.setHeight(1);
+
+		context.getWorldEntities().addEnemy(enemy);
+
+		return enemy;
+	}
+
 	public Bullet createBullet(Vector2f position)
 	{
 		Bullet bullet = new Bullet(context, position);
 		bullet.setTexture(context.getBulletTexture());
 		bullet.setWidth(.25f);
 		bullet.setHeight(.25f);
-		
+
 		context.getWorldEntities().addBullet(bullet);
 
 		return bullet;
@@ -86,7 +98,7 @@ public class WorldFactory
 		vTop.x = (v1.x + v2.x) / 2;
 		vBottom.x = vTop.x;
 		vTop.y = Math.max(v1.y, v2.y) + .01f;
-		vBottom.y = Math.min(v1.y, v2.y) - 1.06f ;
+		vBottom.y = Math.min(v1.y, v2.y) - 1.06f;
 
 		float halfheight = Math.abs(v1.y - v2.y) / 2;
 		float halfwidth = Math.abs(v1.x - v2.x) / 2;
@@ -94,8 +106,9 @@ public class WorldFactory
 		createBorder(vRight, .01f, halfheight);
 		createBorder(vLeft, .01f, halfheight);
 		createBorder(vTop, halfwidth, .01f);
-		Body bottomBodyBorder = createBorder(vBottom, halfwidth, .01f);
-		bottomBodyBorder.setUserData(new Border());		
+		createBorder(vBottom, halfwidth, .01f);
+//		Body bottomBodyBorder = createBorder(vBottom, halfwidth, .01f);
+//		bottomBodyBorder.setUserData(new Border());
 	}
 
 	private Body createBorder(Vec2 position, float halfwidth, float halfheight)
@@ -114,7 +127,7 @@ public class WorldFactory
 		fixtureDef.filter.maskBits = 0xffff;
 
 		body.createFixture(fixtureDef);
-		
+
 		return body;
 	}
 }
