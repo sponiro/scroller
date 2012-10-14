@@ -138,7 +138,7 @@ public class ScrollerGame
 
 	private Vector2f randomPosition(Random random)
 	{
-		return new Vector2f(random.nextFloat() * 15 + .5f, 10);
+		return new Vector2f(random.nextFloat() * 15 + .5f, 12.5f);
 	}
 
 	private void processInput()
@@ -274,7 +274,7 @@ public class ScrollerGame
 
 	private void createEnemies()
 	{
-		if (random.nextFloat() < 0.1f)
+		if (random.nextFloat() < 0.01f)
 		{
 			// Enemy enemy =
 			// context.getWorldFactory().createEnemy(randomPosition(random));
@@ -282,7 +282,7 @@ public class ScrollerGame
 			// .1f)));
 
 			Enemy enemy = context.getWorldFactory().createSmallEnemy(randomPosition(random));
-			enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f + .1f)));
+			enemy.setVelocity(new Vector2f(0f, -2));
 		}
 	}
 

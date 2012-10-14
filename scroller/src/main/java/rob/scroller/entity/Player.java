@@ -12,7 +12,7 @@ import rob.scroller.ScrollerGameContext;
 
 public class Player extends Character
 {
-	private static final float MAX_SPEED = 2;
+	private static final float MAX_SPEED = 4;
 
 	private boolean shooting;
 	private long lastShootTime;

@@ -1,5 +1,7 @@
 package rob.scroller.entity;
 
+import java.util.Random;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -45,5 +47,16 @@ public class SmallEnemy extends Enemy
 		body.setUserData(this);
 
 		return body;
+	}
+	
+	@Override
+	public void beforeWorldStep()
+	{
+		Random random = new Random();
+		if (random.nextFloat() < 0.01)
+		{
+			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getCenterPosition());
+			enemyBullet.setVelocity(new Vector2f(0, -2));
+		}
 	}
 }

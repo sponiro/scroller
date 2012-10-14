@@ -114,7 +114,7 @@ public class WorldFactory
 
 		Vec2 vTop = new Vec2();
 		vTop.x = (v1.x + v2.x) / 2;
-		vTop.y = Math.max(v1.y, v2.y) + halfBorderWidth + distance;
+		vTop.y = Math.max(v1.y, v2.y) + halfBorderWidth + distance * 4;
 
 		Vec2 vBottom = new Vec2();
 		vBottom.x = vTop.x;

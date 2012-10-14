@@ -53,7 +53,7 @@ public class Enemy extends Character
 		if (random.nextFloat() < 0.1)
 		{
 			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getPosition());
-			enemyBullet.setVelocity(new Vector2f(0, -10));
+			enemyBullet.setVelocity(new Vector2f(0, -5));
 		}
 	}
 	
