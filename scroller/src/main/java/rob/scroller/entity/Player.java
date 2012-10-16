@@ -20,6 +20,8 @@ public class Player extends Character
 	public Player(ScrollerGameContext context, Vector2f position)
 	{
 		super(context, position);
+		
+		setLife(100);
 	}
 
 	@Override
@@ -136,7 +138,7 @@ public class Player extends Character
 
 		if (bulletVectorCopy.lengthSquared() >= 0.1)
 		{
-			bulletVectorCopy.scale(MAX_SPEED * 4 / bulletVectorCopy.length());
+			bulletVectorCopy.scale(MAX_SPEED * 3 / bulletVectorCopy.length());
 		}
 
 		return bulletVectorCopy;
@@ -185,5 +187,11 @@ public class Player extends Character
 		}
 
 		return bullet;
+	}
+	
+	@Override
+	public void isHitBy(Entity entity)
+	{
+		System.out.println("OMG, I'm hit!");
 	}
 }

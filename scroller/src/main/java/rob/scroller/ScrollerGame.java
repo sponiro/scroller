@@ -282,7 +282,7 @@ public class ScrollerGame
 			// .1f)));
 
 			Enemy enemy = context.getWorldFactory().createSmallEnemy(randomPosition(random));
-			enemy.setVelocity(new Vector2f(0f, -2));
+			enemy.setVelocity(new Vector2f(0f, -1));
 		}
 	}
 
