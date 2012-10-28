@@ -1,6 +1,7 @@
 package rob.scroller.map;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CharacterPrototype extends EntityPrototype
@@ -14,7 +15,7 @@ public class CharacterPrototype extends EntityPrototype
 
 	public List<BulletPrototype> getBulletPrototypes()
 	{
-		return bulletPrototypes;
+		return Collections.unmodifiableList(bulletPrototypes);
 	}
 
 	public void addBulletPrototype(BulletPrototype bulletPrototype)
