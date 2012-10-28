@@ -32,7 +32,8 @@ public class WorldFactory
 	{
 		Player player = new Player(context, position);
 		player.setTexture(prototype.getTexture());
-
+		player.setBulletPrototype(prototype.getBulletPrototypes().get(0));
+		
 		context.getWorldEntities().setPlayer(player);
 
 		return player;
@@ -42,6 +43,7 @@ public class WorldFactory
 	{
 		Enemy enemy = new Enemy(context, position);
 		enemy.setTexture(prototype.getTexture());
+		enemy.setBulletPrototype(prototype.getBulletPrototypes().get(0));
 		enemy.setWidth(1);
 		enemy.setHeight(1);
 

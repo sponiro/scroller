@@ -81,5 +81,4 @@ public class Enemy extends Character
 	{
 		this.bulletPrototype = bulletPrototype;
 	}
-
 }

@@ -20,11 +20,14 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
 
+import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Entity;
 import rob.scroller.entity.Player;
 import rob.scroller.input.PlayerInput;
+import rob.scroller.map.EnemyPrototype;
 import rob.scroller.map.GameMap;
 import rob.scroller.map.PlayerPrototype;
+import rob.scroller.stream.IMapLoader;
 import rob.scroller.stream.MapArchive;
 import rob.scroller.stream.MapLoader;
 
@@ -282,11 +285,16 @@ public class ScrollerGame
 
 	private void createEnemies()
 	{
-//		if (random.nextFloat() < 0.01f)
-//		{
-//			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
-//			enemy.setVelocity(new Vector2f(0f, -1));
-//		}
+		if (random.nextFloat() < 0.01f)
+		{
+			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random), getDefaultEnemyPrototype());
+			enemy.setVelocity(new Vector2f(0f, -1));
+		}
+	}
+
+	private EnemyPrototype getDefaultEnemyPrototype()
+	{
+		return context.getGameMap().getEnemyPrototype("defaultEnemy");
 	}
 
 	private void removeDeadEntities()
@@ -426,7 +434,7 @@ public class ScrollerGame
 	{
 		String mapFilename = argv.length >= 1 ? argv[0] : "data/map.zip";
 
-		MapLoader mapLoader = new MapLoader();
+		IMapLoader mapLoader = new MapLoader();
 		MapArchive mapArchive = mapLoader.loadMapArchive(mapFilename);
 
 		Injector injector = Guice.createInjector(new GameModule());

@@ -15,10 +15,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
 
-public class MapLoader
+public class MapLoader implements IMapLoader
 {
 	private Logger logger = LoggerFactory.getLogger(MapLoader.class);
 
+	@Override
 	public MapArchive loadMapArchive(String filename)
 	{
 		MapArchive archive = new MapArchive();
@@ -85,7 +86,6 @@ public class MapLoader
 
 	public MMap load(InputStream stream)
 	{
-
 		ObjectMapper mapper = new ObjectMapper();
 
 		try

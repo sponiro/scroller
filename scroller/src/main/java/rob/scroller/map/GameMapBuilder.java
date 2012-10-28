@@ -83,6 +83,11 @@ public class GameMapBuilder
 
 			for (String bulletName : enemy.getBullets())
 			{
+				if (gm.getBulletPrototype(bulletName) == null)
+				{
+					throw new MapException(MessageFormat.format("Missing bullet \"{0}\"", bulletName));
+				}
+				
 				enemyPrototype.addBulletPrototype(gm.getBulletPrototype(bulletName));
 			}
 		}
