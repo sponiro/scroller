@@ -54,25 +54,10 @@ public abstract class Entity implements ISimulationAction
 		return position;
 	}
 
-	// public void setPosition(Vector2f position)
-	// {
-	// Vector2f newPosition = new Vector2f();
-	// newPosition.x = getCenterPosition().x + (float) texture.getImageWidth() /
-	// 2;
-	// newPosition.y = getCenterPosition().y + (float) texture.getImageHeight()
-	// / 2;
-	// body.setTransform(getVectorConverter().convertToMeter(newPosition), 0);
-	// }
-
 	public Vector2f getCenterPosition()
 	{
 		return new Vector2f(body.getPosition().x, body.getPosition().y);
 	}
-
-	// public void setCenterPosition(Vector2f center)
-	// {
-	// body.setTransform(new Vec2(center.x, center.y), 0);
-	// }
 
 	public void render(IRenderer renderer)
 	{
