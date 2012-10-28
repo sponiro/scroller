@@ -30,7 +30,8 @@ public class WorldFactory
 
 	public Player createPlayer(Vector2f position, PlayerPrototype prototype)
 	{
-		Player player = new Player(context, position);
+		Player player = new Player();
+		player.createBody(context.getWorld(), position);
 		player.setTexture(prototype.getTexture());
 		player.setBulletPrototype(prototype.getBulletPrototypes().get(0));
 
@@ -41,7 +42,8 @@ public class WorldFactory
 
 	public Enemy createEnemy(Vector2f position, EnemyPrototype prototype)
 	{
-		Enemy enemy = new Enemy(context, position);
+		Enemy enemy = new Enemy();
+		enemy.createBody(context.getWorld(), position);
 		enemy.setTexture(prototype.getTexture());
 		enemy.setBulletPrototype(prototype.getBulletPrototypes().get(0));
 		enemy.setWidth(1);
@@ -54,7 +56,8 @@ public class WorldFactory
 
 	public Bullet createBullet(Vector2f position, BulletPrototype prototype)
 	{
-		Bullet bullet = new Bullet(context, position);
+		Bullet bullet = new Bullet();
+		bullet.createBody(context.getWorld(), position);
 		bullet.setTexture(prototype.getTexture());
 		bullet.setWidth(.25f);
 		bullet.setHeight(.25f);
@@ -66,7 +69,8 @@ public class WorldFactory
 
 	public Bullet createEnemyBullet(Vector2f position, BulletPrototype prototype)
 	{
-		EnemyBullet bullet = new EnemyBullet(context, position);
+		EnemyBullet bullet = new EnemyBullet();
+		bullet.createBody(context.getWorld(), position);
 		bullet.setTexture(prototype.getTexture());
 		bullet.setWidth(.25f);
 		bullet.setHeight(.25f);
@@ -139,7 +143,7 @@ public class WorldFactory
 		fixtureDef.filter.maskBits = 0xffff;
 
 		body.createFixture(fixtureDef);
-		body.setUserData(new Border(context, new Vector2f()));
+		body.setUserData(new Border());
 
 		return body;
 	}

@@ -59,6 +59,10 @@ public class WorldEntities implements ISimulationAction
 
 	public void setPlayer(Player player)
 	{
+		if (this.player != null) {
+			this.player.destroy();
+		}
+		
 		this.player = player;
 	}
 
@@ -104,13 +108,13 @@ public class WorldEntities implements ISimulationAction
 	}
 
 	@Override
-	public void beforeWorldStep()
+	public void beforeWorldStep(ScrollerGameContext context)
 	{
-		player.beforeWorldStep();
+		player.beforeWorldStep(context);
 
 		for (Entity entity : getEntities())
 		{
-			entity.beforeWorldStep();
+			entity.beforeWorldStep(context);
 		}
 	}
 }

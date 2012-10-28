@@ -8,6 +8,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
 import org.lwjgl.util.vector.Vector2f;
 
 import rob.scroller.ScrollerGameContext;
@@ -17,13 +18,8 @@ public class Enemy extends Character
 {
 	private BulletPrototype bulletPrototype;
 
-	public Enemy(ScrollerGameContext context, Vector2f position)
-	{
-		super(context, position);
-	}
-
 	@Override
-	protected Body createBody(Vector2f position)
+	public Body createBody(World world, Vector2f position)
 	{
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
@@ -40,22 +36,23 @@ public class Enemy extends Character
 		fixtureDef.filter.categoryBits = 2;
 		fixtureDef.filter.maskBits = 4 | 8;
 
-		Body body = context.getWorld().createBody(bodyDef);
+		Body body = world.createBody(bodyDef);
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
+		setBody(body);
 
 		return body;
 	}
 
 	@Override
-	public void beforeWorldStep()
+	public void beforeWorldStep(ScrollerGameContext context)
 	{
-		super.beforeWorldStep();
+		super.beforeWorldStep(context);
 
 		Random random = new Random();
 		if (random.nextFloat() < 0.1)
 		{
-			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getPosition(), bulletPrototype);
+			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getCenterPosition(), bulletPrototype);
 			enemyBullet.setVelocity(new Vector2f(0, -5));
 		}
 	}

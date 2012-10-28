@@ -2,7 +2,7 @@ package rob.scroller;
 
 public interface ISimulationAction
 {
-	void beforeWorldStep();
+	void beforeWorldStep(ScrollerGameContext context);
 
 	void afterWorldStep();
 }

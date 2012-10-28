@@ -1,17 +1,11 @@
 package rob.scroller.entity;
 
-import org.lwjgl.util.vector.Vector2f;
-
-import rob.scroller.ScrollerGameContext;
-
 public abstract class Character extends Entity
 {
 	private int life;
 
-	public Character(ScrollerGameContext context, Vector2f position)
+	public Character()
 	{
-		super(context, position);
-
 		this.life = 2;
 	}
 

@@ -6,23 +6,21 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
 import org.lwjgl.util.vector.Vector2f;
 
-import rob.scroller.ScrollerGameContext;
 
 public class Bullet extends Entity
 {
 	private int damage;
 
-	public Bullet(ScrollerGameContext context, Vector2f position)
+	public Bullet()
 	{
-		super(context, position);
-
 		this.damage = 1;
 	}
 
 	@Override
-	protected Body createBody(Vector2f position)
+	public Body createBody(World world, Vector2f position)
 	{
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
@@ -39,10 +37,11 @@ public class Bullet extends Entity
 		fixtureDef.filter.categoryBits = 4;
 		fixtureDef.filter.maskBits = 2 | 8;
 
-		Body body = context.getWorld().createBody(bodyDef);
+		Body body = world.createBody(bodyDef);
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
-
+		setBody(body);
+		
 		return body;
 	}
 

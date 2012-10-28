@@ -6,6 +6,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
 import org.lwjgl.util.vector.Vector2f;
 
 import rob.scroller.ScrollerGameContext;
@@ -20,15 +21,13 @@ public class Player extends Character
 
 	private BulletPrototype bulletPrototype;
 
-	public Player(ScrollerGameContext context, Vector2f position)
+	public Player()
 	{
-		super(context, position);
-
 		setLife(100);
 	}
 
 	@Override
-	protected Body createBody(Vector2f position)
+	public Body createBody(World world, Vector2f position)
 	{
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
@@ -45,10 +44,11 @@ public class Player extends Character
 		fixtureDef.filter.categoryBits = 1;
 		fixtureDef.filter.maskBits = 4 | 8;
 
-		Body body = context.getWorld().createBody(bodyDef);
+		Body body = world.createBody(bodyDef);
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
-
+		setBody(body);
+		
 		return body;
 	}
 
@@ -107,12 +107,12 @@ public class Player extends Character
 	}
 
 	@Override
-	public void beforeWorldStep()
+	public void beforeWorldStep(ScrollerGameContext context)
 	{
-		super.beforeWorldStep();
+		super.beforeWorldStep(context);
 
 		// shoot(context.getMouseAim());
-		shoot(new Vector2f(0, 1));
+		shoot(context, new Vector2f(0, 1));
 	}
 
 	private void normalizeVelocity()
@@ -169,12 +169,12 @@ public class Player extends Character
 		System.out.println("OMG, I'm hit!");
 	}
 
-	private boolean shootingAndBulletReady()
+	private boolean shootingAndBulletReady(ScrollerGameContext context)
 	{
-		return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall();
+		return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall(context);
 	}
 
-	private float getBulletIntervall()
+	private float getBulletIntervall(ScrollerGameContext context)
 	{
 		return 5 * context.getWorldTimestep() * 1000;
 	}
@@ -184,11 +184,11 @@ public class Player extends Character
 		return lastShootTime;
 	}
 
-	private Bullet shoot(Vector2f bulletVector)
+	private Bullet shoot(ScrollerGameContext context, Vector2f bulletVector)
 	{
 		Bullet bullet = null;
 
-		if (shootingAndBulletReady())
+		if (shootingAndBulletReady(context))
 		{
 			bullet = context.getWorldFactory().createBullet(getCenterPosition(), bulletPrototype);
 			bullet.setVelocity(getNormalizedBulletVector(bulletVector));

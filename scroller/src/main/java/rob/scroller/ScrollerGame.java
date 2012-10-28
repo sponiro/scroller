@@ -270,7 +270,7 @@ public class ScrollerGame
 
 			createEnemies();
 
-			getWorldEntities().beforeWorldStep();
+			getWorldEntities().beforeWorldStep(context);
 
 			worldStepCounter.step();
 			context.setNowInMilliseconds(worldStepCounter.getWorldTime());

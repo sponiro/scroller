@@ -2,6 +2,7 @@ package rob.scroller.entity;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.World;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.opengl.Texture;
 
@@ -15,8 +16,6 @@ import rob.scroller.ScrollerGameContext;
  */
 public abstract class Entity implements ISimulationAction
 {
-	protected final ScrollerGameContext context;
-
 	private Texture texture;
 	private float width;
 	private float height;
@@ -24,17 +23,14 @@ public abstract class Entity implements ISimulationAction
 	private boolean markedForRemoval;
 	private Body body;
 
-	public Entity(ScrollerGameContext context, Vector2f position)
+	public Entity()
 	{
-		this.context = context;
 		this.markedForRemoval = false;
 		this.width = 1;
 		this.height = 1;
-
-		this.body = createBody(position);
 	}
 
-	protected abstract Body createBody(Vector2f position);
+	public abstract Body createBody(World world, Vector2f position);
 
 	public Vector2f getVelocity()
 	{
@@ -81,18 +77,13 @@ public abstract class Entity implements ISimulationAction
 		this.markedForRemoval = true;
 	}
 
-	public ScrollerGameContext getContext()
-	{
-		return context;
-	}
-
 	public void destroy()
 	{
-		context.getWorld().destroyBody(body);
+		body.getWorld().destroyBody(body);
 	}
 
 	@Override
-	public void beforeWorldStep()
+	public void beforeWorldStep(ScrollerGameContext context)
 	{
 
 	}
