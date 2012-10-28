@@ -9,6 +9,7 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.util.vector.Vector2f;
 
 import rob.scroller.ScrollerGameContext;
+import rob.scroller.map.BulletPrototype;
 
 public class Player extends Character
 {
@@ -17,10 +18,12 @@ public class Player extends Character
 	private boolean shooting;
 	private long lastShootTime;
 
+	private BulletPrototype bulletPrototype;
+
 	public Player(ScrollerGameContext context, Vector2f position)
 	{
 		super(context, position);
-		
+
 		setLife(100);
 	}
 
@@ -54,16 +57,16 @@ public class Player extends Character
 		Vector2f velocity = getVelocity();
 		velocity.setY(-MAX_SPEED);
 		setVelocity(velocity);
-		
+
 		normalizeVelocity();
 	}
 
 	public void moveUp()
 	{
-		Vector2f velocity = getVelocity();		
+		Vector2f velocity = getVelocity();
 		velocity.setY(MAX_SPEED);
 		setVelocity(velocity);
-		
+
 		normalizeVelocity();
 	}
 
@@ -72,7 +75,7 @@ public class Player extends Character
 		Vector2f velocity = getVelocity();
 		velocity.setY(0);
 		setVelocity(velocity);
-		
+
 		normalizeVelocity();
 	}
 
@@ -81,7 +84,7 @@ public class Player extends Character
 		Vector2f velocity = getVelocity();
 		velocity.setX(MAX_SPEED);
 		setVelocity(velocity);
-		
+
 		normalizeVelocity();
 	}
 
@@ -90,7 +93,7 @@ public class Player extends Character
 		Vector2f velocity = getVelocity();
 		velocity.setX(-MAX_SPEED);
 		setVelocity(velocity);
-		
+
 		normalizeVelocity();
 	}
 
@@ -99,7 +102,7 @@ public class Player extends Character
 		Vector2f velocity = getVelocity();
 		velocity.setX(0);
 		setVelocity(velocity);
-		
+
 		normalizeVelocity();
 	}
 
@@ -108,7 +111,7 @@ public class Player extends Character
 	{
 		super.beforeWorldStep();
 
-//		shoot(context.getMouseAim());
+		// shoot(context.getMouseAim());
 		shoot(new Vector2f(0, 1));
 	}
 
@@ -120,15 +123,16 @@ public class Player extends Character
 	private Vector2f getNormalizedVelocity()
 	{
 		Vector2f velocity = getVelocity();
-	
+
 		if (velocity.lengthSquared() >= 0.1)
 		{
 			velocity.scale(MAX_SPEED / velocity.length());
-		} else {
+		} else
+		{
 			velocity.setX(0);
 			velocity.setY(0);
 		}
-	
+
 		return velocity;
 	}
 
@@ -159,6 +163,12 @@ public class Player extends Character
 		return shooting;
 	}
 
+	@Override
+	public void isHitBy(Entity entity)
+	{
+		System.out.println("OMG, I'm hit!");
+	}
+
 	private boolean shootingAndBulletReady()
 	{
 		return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall();
@@ -180,7 +190,7 @@ public class Player extends Character
 
 		if (shootingAndBulletReady())
 		{
-			bullet = context.getWorldFactory().createBullet(getCenterPosition());
+			bullet = context.getWorldFactory().createBullet(getCenterPosition(), bulletPrototype);
 			bullet.setVelocity(getNormalizedBulletVector(bulletVector));
 
 			lastShootTime = context.getNowInMilliseconds();
@@ -188,10 +198,14 @@ public class Player extends Character
 
 		return bullet;
 	}
-	
-	@Override
-	public void isHitBy(Entity entity)
+
+	public BulletPrototype getBulletPrototype()
 	{
-		System.out.println("OMG, I'm hit!");
+		return bulletPrototype;
+	}
+
+	public void setBulletPrototype(BulletPrototype bulletPrototype)
+	{
+		this.bulletPrototype = bulletPrototype;
 	}
 }

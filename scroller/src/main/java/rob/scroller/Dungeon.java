@@ -3,6 +3,8 @@ package rob.scroller;
 import java.util.ArrayList;
 import java.util.List;
 
+import rob.scroller.map.EntityPrototype;
+
 public class Dungeon
 {
 	private static final float SPEED = 1.5f;
@@ -39,7 +41,8 @@ public class Dungeon
 			for (int c = 0; c < columns; c++)
 			{
 				Floor floor = new Floor();
-				floor.setTexture(context.getFloorTexture());
+				EntityPrototype generalPrototype = context.getGameMap().getGeneralPrototype("floor");
+				floor.setTexture(generalPrototype.getTexture());
 
 				row.add(floor);
 			}
@@ -126,7 +129,7 @@ public class Dungeon
 	public Floor getDefaultFloor()
 	{
 		Floor floor = new Floor();
-		floor.setTexture(context.getEmptyTexture());
+//		floor.setTexture(context.getEmptyTexture());
 
 		return floor;
 	}

@@ -10,9 +10,10 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-import org.newdawn.slick.util.ResourceLoader;
+
+import rob.scroller.map.GameMap;
+import rob.scroller.map.GameMapBuilder;
+import rob.scroller.stream.MapArchive;
 
 import com.google.inject.Inject;
 
@@ -23,29 +24,17 @@ public class ScrollerGameContext
 	private int displayWidth;
 	private int displayHeight;
 
-	private Texture floorTexture;
-	private Texture playerTexture;
-	private Texture enemyTexture;
-	private Texture emptyTexture;
-	private Texture bulletTexture;
-	private Texture enemySimpleTexture;
-
-	public Texture getEnemySimpleTexture()
-	{
-		return enemySimpleTexture;
-	}
-
-	private UnicodeFont textFont;
-
 	private long nowInMilliseconds;
+	private Vector2f mouseAim;
 
-	private IRenderer renderer;
+	private World world;
 	private WorldFactory worldFactory;
 	private WorldEntities worldEntities;
 
-	private World world;
+	private UnicodeFont textFont;
+	private IRenderer renderer;
 
-	private Vector2f mouseAim;
+	private GameMap gameMap;
 
 	@Inject
 	public ScrollerGameContext(ContactListener contactListener)
@@ -55,20 +44,20 @@ public class ScrollerGameContext
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadAndInit() throws IOException, SlickException
+	public void loadAndInit(MapArchive mapArchive) throws IOException, SlickException
 	{
-		floorTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/floor.png"), true);
-//		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/player.png"), true);
-		playerTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/ship1.png"), true);
-		enemyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy.png"), true);
-		enemySimpleTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/enemy_simple1.png"), true);
-		emptyTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/empty.png"), true);
-		bulletTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/bullet.png"), true);
+		loadGameMap(mapArchive);
 
 		textFont = new UnicodeFont(new Font("Times New Roman", Font.PLAIN, 18));
 		textFont.addAsciiGlyphs();
 		textFont.getEffects().add(new ColorEffect(java.awt.Color.WHITE));
 		textFont.loadGlyphs();
+	}
+
+	private void loadGameMap(MapArchive mapArchive) throws IOException
+	{
+		GameMapBuilder gameMapBuilder = new GameMapBuilder();
+		gameMap = gameMapBuilder.load(mapArchive);
 	}
 
 	public World getWorld()
@@ -102,31 +91,6 @@ public class ScrollerGameContext
 	public void setDisplayHeight(int displayHeight)
 	{
 		this.displayHeight = displayHeight;
-	}
-
-	public Texture getFloorTexture()
-	{
-		return floorTexture;
-	}
-
-	public Texture getPlayerTexture()
-	{
-		return playerTexture;
-	}
-
-	public Texture getEnemyTexture()
-	{
-		return enemyTexture;
-	}
-
-	public Texture getEmptyTexture()
-	{
-		return emptyTexture;
-	}
-
-	public Texture getBulletTexture()
-	{
-		return bulletTexture;
 	}
 
 	public UnicodeFont getTextFont()
@@ -198,5 +162,10 @@ public class ScrollerGameContext
 	public Vector2f getMouseAim()
 	{
 		return mouseAim;
+	}
+
+	public GameMap getGameMap()
+	{
+		return gameMap;
 	}
 }

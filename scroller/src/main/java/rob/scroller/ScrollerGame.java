@@ -1,5 +1,6 @@
 package rob.scroller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -19,10 +20,13 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
 
-import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Entity;
 import rob.scroller.entity.Player;
 import rob.scroller.input.PlayerInput;
+import rob.scroller.map.GameMap;
+import rob.scroller.map.PlayerPrototype;
+import rob.scroller.stream.MapArchive;
+import rob.scroller.stream.MapLoader;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -44,6 +48,7 @@ public class ScrollerGame
 	private boolean wantsExit;
 
 	private Random random = new Random();
+	
 	private FloatBuffer modelBuffer;
 	private FloatBuffer projectionBuffer;
 	private IntBuffer viewBuffer;
@@ -52,7 +57,7 @@ public class ScrollerGame
 
 	private PlayerInput playerInput = new PlayerInput();
 
-	public void start() throws SlickException
+	public void start(MapArchive mapArchive) throws SlickException
 	{
 		context.setDisplayWidth(800);
 		context.setDisplayHeight(600);
@@ -67,7 +72,7 @@ public class ScrollerGame
 
 			Keyboard.enableRepeatEvents(true);
 
-			context.loadAndInit();
+			context.loadAndInit(mapArchive);
 
 		} catch (LWJGLException e)
 		{
@@ -85,7 +90,6 @@ public class ScrollerGame
 
 		worldStepCounter = new WorldStepCounter(context.getWorldTimestep());
 		worldStepCounter.reset(getTime());
-
 		lastFPSTime = worldStepCounter.getWorldTime();
 		context.setNowInMilliseconds(worldStepCounter.getWorldTime());
 
@@ -131,8 +135,12 @@ public class ScrollerGame
 
 	private void initGame()
 	{
+		GameMap gameMap = context.getGameMap();
+		
+		PlayerPrototype playerPrototype = gameMap.getPlayerPrototype("player");
+		
 		context.getWorldFactory().createDungeon(16, 12);
-		context.getWorldFactory().createPlayer(new Vector2f(8f, 2));
+		context.getWorldFactory().createPlayer(new Vector2f(8f, 2), playerPrototype);
 		context.getWorldEntities().getDungeon().resetToStart();
 	}
 
@@ -226,7 +234,7 @@ public class ScrollerGame
 		default:
 			break;
 		}
-		
+
 		while (Mouse.next())
 		{
 			if (Mouse.getEventButton() == 0)
@@ -274,16 +282,11 @@ public class ScrollerGame
 
 	private void createEnemies()
 	{
-		if (random.nextFloat() < 0.01f)
-		{
-			// Enemy enemy =
-			// context.getWorldFactory().createEnemy(randomPosition(random));
-			// enemy.setVelocity(new Vector2f(0f, -(random.nextFloat() * 1.3f +
-			// .1f)));
-
-			Enemy enemy = context.getWorldFactory().createSmallEnemy(randomPosition(random));
-			enemy.setVelocity(new Vector2f(0f, -1));
-		}
+//		if (random.nextFloat() < 0.01f)
+//		{
+//			Enemy enemy = context.getWorldFactory().createEnemy(randomPosition(random));
+//			enemy.setVelocity(new Vector2f(0f, -1));
+//		}
 	}
 
 	private void removeDeadEntities()
@@ -394,8 +397,10 @@ public class ScrollerGame
 		GL11.glScalef(1, -1, 1);
 
 		context.getTextFont().drawString(0, 0, Long.toString(lastFPS) + " fps", Color.white);
-		context.getTextFont().drawString(0, 20, Long.toString(context.getWorldEntities().getBullets().size()) + " bullets", Color.white);
-		context.getTextFont().drawString(0, 40, Long.toString(context.getWorldEntities().getEnemies().size()) + " enemies", Color.white);
+		context.getTextFont().drawString(0, 20,
+				Long.toString(context.getWorldEntities().getBullets().size()) + " bullets", Color.white);
+		context.getTextFont().drawString(0, 40,
+				Long.toString(context.getWorldEntities().getEnemies().size()) + " enemies", Color.white);
 
 		GL11.glPopMatrix();
 	}
@@ -415,13 +420,19 @@ public class ScrollerGame
 	 * 
 	 * @param argv
 	 * @throws SlickException
+	 * @throws FileNotFoundException
 	 */
-	public static void main(String[] argv) throws SlickException
+	public static void main(String[] argv) throws SlickException, FileNotFoundException
 	{
+		String mapFilename = argv.length >= 1 ? argv[0] : "data/map.zip";
+
+		MapLoader mapLoader = new MapLoader();
+		MapArchive mapArchive = mapLoader.loadMapArchive(mapFilename);
+
 		Injector injector = Guice.createInjector(new GameModule());
 
 		ScrollerGame game = injector.getInstance(ScrollerGame.class);
-		game.start();
+		game.start(mapArchive);
 	}
 
 	@Inject

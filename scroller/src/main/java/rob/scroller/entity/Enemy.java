@@ -11,9 +11,12 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.util.vector.Vector2f;
 
 import rob.scroller.ScrollerGameContext;
+import rob.scroller.map.BulletPrototype;
 
 public class Enemy extends Character
 {
+	private BulletPrototype bulletPrototype;
+
 	public Enemy(ScrollerGameContext context, Vector2f position)
 	{
 		super(context, position);
@@ -52,18 +55,31 @@ public class Enemy extends Character
 		Random random = new Random();
 		if (random.nextFloat() < 0.1)
 		{
-			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getPosition());
+			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getPosition(), bulletPrototype);
 			enemyBullet.setVelocity(new Vector2f(0, -5));
 		}
 	}
-	
+
 	@Override
 	public void isHitBy(Entity entity)
 	{
-		if (entity instanceof Border) {
+		if (entity instanceof Border)
+		{
 			markForRemoval();
-		} else {
+		} else
+		{
 			super.isHitBy(entity);
 		}
 	}
+
+	public BulletPrototype getBulletPrototype()
+	{
+		return bulletPrototype;
+	}
+
+	public void setBulletPrototype(BulletPrototype bulletPrototype)
+	{
+		this.bulletPrototype = bulletPrototype;
+	}
+
 }

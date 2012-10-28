@@ -12,7 +12,9 @@ import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
 import rob.scroller.entity.EnemyBullet;
 import rob.scroller.entity.Player;
-import rob.scroller.entity.SmallEnemy;
+import rob.scroller.map.BulletPrototype;
+import rob.scroller.map.EnemyPrototype;
+import rob.scroller.map.PlayerPrototype;
 
 import com.google.inject.Inject;
 
@@ -26,20 +28,20 @@ public class WorldFactory
 		this.context = context;
 	}
 
-	public Player createPlayer(Vector2f position)
+	public Player createPlayer(Vector2f position, PlayerPrototype prototype)
 	{
 		Player player = new Player(context, position);
-		player.setTexture(context.getPlayerTexture());
+		player.setTexture(prototype.getTexture());
 
 		context.getWorldEntities().setPlayer(player);
 
 		return player;
 	}
 
-	public Enemy createEnemy(Vector2f position)
+	public Enemy createEnemy(Vector2f position, EnemyPrototype prototype)
 	{
 		Enemy enemy = new Enemy(context, position);
-		enemy.setTexture(context.getEnemyTexture());
+		enemy.setTexture(prototype.getTexture());
 		enemy.setWidth(1);
 		enemy.setHeight(1);
 
@@ -47,23 +49,11 @@ public class WorldFactory
 
 		return enemy;
 	}
-
-	public Enemy createSmallEnemy(Vector2f position)
-	{
-		Enemy enemy = new SmallEnemy(context, position);
-		enemy.setTexture(context.getEnemySimpleTexture());
-		enemy.setWidth(1);
-		enemy.setHeight(1);
-
-		context.getWorldEntities().addEnemy(enemy);
-
-		return enemy;
-	}
-
-	public Bullet createBullet(Vector2f position)
+	
+	public Bullet createBullet(Vector2f position, BulletPrototype prototype)
 	{
 		Bullet bullet = new Bullet(context, position);
-		bullet.setTexture(context.getBulletTexture());
+		bullet.setTexture(prototype.getTexture());
 		bullet.setWidth(.25f);
 		bullet.setHeight(.25f);
 
@@ -72,10 +62,10 @@ public class WorldFactory
 		return bullet;
 	}
 
-	public Bullet createEnemyBullet(Vector2f position)
+	public Bullet createEnemyBullet(Vector2f position, BulletPrototype prototype)
 	{
 		EnemyBullet bullet = new EnemyBullet(context, position);
-		bullet.setTexture(context.getBulletTexture());
+		bullet.setTexture(prototype.getTexture());
 		bullet.setWidth(.25f);
 		bullet.setHeight(.25f);
 
