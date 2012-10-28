@@ -32,7 +32,7 @@ public class EntityPrototype
 	public void setName(String name)
 	{
 		Preconditions.checkNotNull(name);
-		
+
 		this.name = name;
 	}
 }

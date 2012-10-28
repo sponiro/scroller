@@ -10,12 +10,12 @@ public class MCharacterTest
 {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
+
 	@Test
 	public void bulletsNotNull()
 	{
 		MCharacter c = new MCharacter();
-		
+
 		assertNotNull(c.getBullets());
 	}
 
@@ -23,8 +23,8 @@ public class MCharacterTest
 	public void setBulletsDoesNotAllowNull() throws Exception
 	{
 		MCharacter c = new MCharacter();
-		
+
 		thrown.expect(NullPointerException.class);
 		c.setBullets(null);
-	}	
+	}
 }

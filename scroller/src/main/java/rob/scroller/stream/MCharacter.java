@@ -13,7 +13,7 @@ public class MCharacter extends MEntity
 	{
 		bullets = new ArrayList<String>();
 	}
-	
+
 	public List<String> getBullets()
 	{
 		return bullets;
@@ -22,7 +22,7 @@ public class MCharacter extends MEntity
 	public void setBullets(List<String> bullets)
 	{
 		Preconditions.checkNotNull(bullets);
-		
+
 		this.bullets = bullets;
 	}
 }

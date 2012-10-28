@@ -33,7 +33,7 @@ public class WorldFactory
 		Player player = new Player(context, position);
 		player.setTexture(prototype.getTexture());
 		player.setBulletPrototype(prototype.getBulletPrototypes().get(0));
-		
+
 		context.getWorldEntities().setPlayer(player);
 
 		return player;
@@ -51,7 +51,7 @@ public class WorldFactory
 
 		return enemy;
 	}
-	
+
 	public Bullet createBullet(Vector2f position, BulletPrototype prototype)
 	{
 		Bullet bullet = new Bullet(context, position);

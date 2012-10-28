@@ -46,7 +46,7 @@ public class MapLoader implements IMapLoader
 				archive.setGameMap(map);
 
 				Map<String, byte[]> resources = new HashMap<String, byte[]>();
-				
+
 				for (MEntity entity : map.getAllEntities())
 				{
 					if (!resources.containsKey(entity.getSprite()))
@@ -56,7 +56,7 @@ public class MapLoader implements IMapLoader
 
 						resources.put(entity.getSprite(), ByteStreams.toByteArray(entityStream));
 					}
-					
+
 					entity.setSpriteData(resources.get(entity.getSprite()));
 				}
 

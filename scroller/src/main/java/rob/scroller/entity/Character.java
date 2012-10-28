@@ -31,7 +31,7 @@ public abstract class Character extends Entity
 		if (entity instanceof Bullet)
 		{
 			Bullet bullet = (Bullet) entity;
-			
+
 			life = life - bullet.getDamage();
 
 			checkForDeath();

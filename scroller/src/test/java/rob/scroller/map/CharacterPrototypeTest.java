@@ -10,12 +10,12 @@ public class CharacterPrototypeTest
 {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
+
 	@Test
 	public void bulletsNotNull() throws Exception
 	{
 		CharacterPrototype cp = new CharacterPrototype();
-		
+
 		assertNotNull(cp.getBulletPrototypes());
 	}
 }

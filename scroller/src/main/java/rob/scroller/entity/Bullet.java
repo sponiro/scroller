@@ -45,13 +45,13 @@ public class Bullet extends Entity
 
 		return body;
 	}
-	
+
 	@Override
 	public void isHitBy(Entity entity)
 	{
 		markForRemoval();
 	}
-	
+
 	public int getDamage()
 	{
 		return damage;

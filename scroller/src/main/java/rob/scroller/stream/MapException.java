@@ -7,7 +7,7 @@ public class MapException extends RuntimeException
 	public MapException()
 	{
 	}
-	
+
 	public MapException(String message)
 	{
 		super(message);

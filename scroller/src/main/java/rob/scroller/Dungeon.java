@@ -31,9 +31,9 @@ public class Dungeon
 		this.rows = rows;
 
 		this.floorTiles = new ArrayList<List<Floor>>(rows);
-		
+
 		totalRows = 2 * rows;
-		
+
 		for (int r = 0; r < totalRows; r++)
 		{
 			ArrayList<Floor> row = new ArrayList<Floor>(columns);
@@ -73,7 +73,7 @@ public class Dungeon
 			for (int rowOffset = 0; rowOffset <= rows; rowOffset++)
 			{
 				int currentRow = getCurrentRow(rowOffset);
-				
+
 				Floor floor = getTile(col, currentRow);
 
 				renderer.blitRepeated(col, rowToCoord(currentRow), 1, 1, floor.getTexture());
@@ -81,7 +81,7 @@ public class Dungeon
 		}
 	}
 
-	/** 
+	/**
 	 * Calculates the screen coordinate to start painting from
 	 * 
 	 * @param row
@@ -110,7 +110,7 @@ public class Dungeon
 	public Floor getTile(int col, int row)
 	{
 		row = row % totalRows;
-		
+
 		if (row < 0 || row >= floorTiles.size())
 		{
 			return getDefaultFloor();
@@ -129,7 +129,7 @@ public class Dungeon
 	public Floor getDefaultFloor()
 	{
 		Floor floor = new Floor();
-//		floor.setTexture(context.getEmptyTexture());
+		// floor.setTexture(context.getEmptyTexture());
 
 		return floor;
 	}

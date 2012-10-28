@@ -69,7 +69,7 @@ public class MMap
 	public void setGeneralEntities(List<MEntity> generalEntities)
 	{
 		Preconditions.checkNotNull(generalEntities);
-		
+
 		this.generalEntities = generalEntities;
 	}
 

@@ -51,7 +51,7 @@ public class ScrollerGame
 	private boolean wantsExit;
 
 	private Random random = new Random();
-	
+
 	private FloatBuffer modelBuffer;
 	private FloatBuffer projectionBuffer;
 	private IntBuffer viewBuffer;
@@ -139,9 +139,9 @@ public class ScrollerGame
 	private void initGame()
 	{
 		GameMap gameMap = context.getGameMap();
-		
+
 		PlayerPrototype playerPrototype = gameMap.getPlayerPrototype("player");
-		
+
 		context.getWorldFactory().createDungeon(16, 12);
 		context.getWorldFactory().createPlayer(new Vector2f(8f, 2), playerPrototype);
 		context.getWorldEntities().getDungeon().resetToStart();

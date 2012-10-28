@@ -8,7 +8,7 @@ public class WorldStepCounter
 
 	public WorldStepCounter(float worldStep)
 	{
-		this.worldStep = (long) (worldStep*1000);
+		this.worldStep = (long) (worldStep * 1000);
 
 		currentTime = 0;
 		worldTime = 0;

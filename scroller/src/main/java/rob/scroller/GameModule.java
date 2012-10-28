@@ -19,9 +19,9 @@ public class GameModule extends AbstractModule
 	{
 		bind(IRenderer.class).to(Renderer.class);
 		bind(WorldFactory.class);
-		
+
 		bind(ContactListener.class).to(ScrollerContactListener.class);
-		
+
 		bind(ScrollerGameContext.class).in(Singleton.class);
 	}
 }

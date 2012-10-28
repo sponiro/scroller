@@ -41,7 +41,7 @@ public class EnemyBullet extends Bullet
 
 		return body;
 	}
-	
+
 	@Override
 	public void isHitBy(Entity entity)
 	{

@@ -87,7 +87,7 @@ public class GameMapBuilder
 				{
 					throw new MapException(MessageFormat.format("Missing bullet \"{0}\"", bulletName));
 				}
-				
+
 				enemyPrototype.addBulletPrototype(gm.getBulletPrototype(bulletName));
 			}
 		}
@@ -127,12 +127,12 @@ public class GameMapBuilder
 
 		gm.addBulletPrototype(bulletPrototype);
 	}
-	
+
 	private void addGeneralEntity(MEntity entity)
 	{
 		EntityPrototype entityPrototype = new EntityPrototype();
 		setEntityValues(entity, entityPrototype);
-		
+
 		gm.addGeneralPrototype(entityPrototype);
 	}
 

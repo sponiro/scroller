@@ -96,7 +96,7 @@ public class WorldEntities implements ISimulationAction
 	public void afterWorldStep()
 	{
 		player.afterWorldStep();
-	
+
 		for (Entity entity : getEntities())
 		{
 			entity.afterWorldStep();

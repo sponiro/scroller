@@ -83,7 +83,7 @@ public abstract class Entity implements ISimulationAction
 
 	public void isHitBy(Entity entity)
 	{
-		
+
 	}
 
 	public boolean isMarkedForRemoval()

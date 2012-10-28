@@ -79,22 +79,22 @@ public class MMapTest
 		thrown.expect(NullPointerException.class);
 		m.setGeneralEntities(null);
 	}
-	
+
 	@Test
 	public void nameNotNull() throws Exception
 	{
 		MMap m = new MMap();
-		
+
 		assertNotNull(m.getName());
 	}
-	
+
 	@Test
 	public void setNamedoesNotAllowNull() throws Exception
 	{
 		MMap m = new MMap();
-		
+
 		thrown.expect(NullPointerException.class);
 		m.setName(null);
 	}
-	
+
 }
