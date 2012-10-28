@@ -52,8 +52,8 @@ public class Enemy extends Character
 		Random random = new Random();
 		if (random.nextFloat() < 0.1)
 		{
-			Bullet enemyBullet = context.getWorldFactory().createEnemyBullet(getCenterPosition(), bulletPrototype);
-			enemyBullet.setVelocity(new Vector2f(0, -5));
+			Bullet bullet = context.getWorldFactory().createEnemyBullet(getCenterPosition(), bulletPrototype);
+			bullet.setVelocity(new Vector2f(0, -5));
 		}
 	}
 

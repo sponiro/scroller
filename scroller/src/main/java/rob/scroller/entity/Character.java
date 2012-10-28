@@ -9,16 +9,6 @@ public abstract class Character extends Entity
 		this.life = 2;
 	}
 
-	public int getLife()
-	{
-		return life;
-	}
-
-	public void setLife(int life)
-	{
-		this.life = life;
-	}
-
 	@Override
 	public void isHitBy(Entity entity)
 	{
@@ -38,5 +28,15 @@ public abstract class Character extends Entity
 		{
 			markForRemoval();
 		}
+	}
+
+	public int getLife()
+	{
+		return life;
+	}
+
+	public void setLife(int life)
+	{
+		this.life = life;
 	}
 }
