@@ -1,7 +1,9 @@
 package rob.scroller.stream;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -24,26 +26,42 @@ public class MapLoader implements IMapLoader
 	{
 		MapArchive archive = new MapArchive();
 
-		ZipFile zFile = null;
+		try
+		{
+			MMap map = readZipFile(filename);
+			archive.setGameMap(map);
+			
+		} catch (MapException e)
+		{
+			
+		}
+
+		return archive;
+	}
+
+	private MMap readZipFile(String filename) throws MapException
+	{
+		MMap map = null;
+
+		ZipFile zipFile = null;
 
 		try
 		{
-			zFile = new ZipFile(filename);
+			zipFile = new ZipFile(filename);
 
-			ZipEntry entry = zFile.getEntry("map.json");
+			ZipEntry zipEntry = zipFile.getEntry("map.json");
 
-			if (entry == null)
+			if (zipEntry == null)
 			{
 				logger.error("Could not find map.json");
 				throw new MapException("Could not find map.json");
 			}
 
-			InputStream inputStream = zFile.getInputStream(entry);
+			InputStream inputStream = zipFile.getInputStream(zipEntry);
 
 			try
 			{
-				MMap map = load(inputStream);
-				archive.setGameMap(map);
+				map = load(inputStream);
 
 				Map<String, byte[]> resources = new HashMap<String, byte[]>();
 
@@ -51,8 +69,8 @@ public class MapLoader implements IMapLoader
 				{
 					if (!resources.containsKey(entity.getSprite()))
 					{
-						ZipEntry entityEntry = zFile.getEntry(entity.getSprite());
-						InputStream entityStream = zFile.getInputStream(entityEntry);
+						ZipEntry entityEntry = zipFile.getEntry(entity.getSprite());
+						InputStream entityStream = zipFile.getInputStream(entityEntry);
 
 						resources.put(entity.getSprite(), ByteStreams.toByteArray(entityStream));
 					}
@@ -69,19 +87,19 @@ public class MapLoader implements IMapLoader
 			throw new MapException();
 		} finally
 		{
-			if (zFile != null)
+			if (zipFile != null)
 			{
 				try
 				{
-					zFile.close();
+					zipFile.close();
 				} catch (IOException e)
 				{
-					logger.warn("Could not close {}", zFile.getName());
+					logger.warn("Could not close {}", zipFile.getName());
 				}
 			}
 		}
 
-		return archive;
+		return map;
 	}
 
 	public MMap load(InputStream stream)
