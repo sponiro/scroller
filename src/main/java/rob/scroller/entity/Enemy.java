@@ -1,81 +1,67 @@
 package rob.scroller.entity;
 
-import java.util.Random;
-
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.*;
 import org.lwjgl.util.vector.Vector2f;
-
 import rob.scroller.ScrollerGameContext;
 import rob.scroller.map.BulletPrototype;
 
-public class Enemy extends Character
-{
-	private BulletPrototype bulletPrototype;
+import java.util.Random;
 
-	@Override
-	public Body createBody(World world, Vector2f position)
-	{
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DYNAMIC;
-		bodyDef.position = new Vec2(position.x, position.y);
+public class Enemy extends Character {
+    private BulletPrototype bulletPrototype;
 
-		PolygonShape playerBox = new PolygonShape();
-		playerBox.setAsBox(1f / 2, 1f / 2);
+    @Override
+    public Body createBody(World world, Vector2f position) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DYNAMIC;
+        bodyDef.position = new Vec2(position.x, position.y);
 
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = playerBox;
-		fixtureDef.density = 1;
-		fixtureDef.friction = 0;
-		fixtureDef.restitution = 0;
-		fixtureDef.filter.categoryBits = 2;
-		fixtureDef.filter.maskBits = 4 | 8;
+        PolygonShape playerBox = new PolygonShape();
+        playerBox.setAsBox(1f / 2, 1f / 2);
 
-		Body body = world.createBody(bodyDef);
-		body.createFixture(fixtureDef);
-		body.setUserData(this);
-		setBody(body);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = playerBox;
+        fixtureDef.density = 1;
+        fixtureDef.friction = 0;
+        fixtureDef.restitution = 0;
+        fixtureDef.filter.categoryBits = 2;
+        fixtureDef.filter.maskBits = 4 | 8;
 
-		return body;
-	}
+        Body body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
+        body.setUserData(this);
+        setBody(body);
 
-	@Override
-	public void beforeWorldStep(ScrollerGameContext context)
-	{
-		super.beforeWorldStep(context);
+        return body;
+    }
 
-		Random random = new Random();
-		if (random.nextFloat() < 0.1)
-		{
-			Bullet bullet = context.getWorldFactory().createEnemyBullet(getCenterPosition(), bulletPrototype);
-			bullet.setVelocity(new Vector2f(0, -5));
-		}
-	}
+    @Override
+    public void beforeWorldStep(ScrollerGameContext context) {
+        super.beforeWorldStep(context);
 
-	@Override
-	public void isHitBy(Entity entity)
-	{
-		if (entity instanceof Border)
-		{
-			markForRemoval();
-		} else
-		{
-			super.isHitBy(entity);
-		}
-	}
+        Random random = new Random();
+        if (random.nextFloat() < 0.1) {
+            Bullet bullet = context.getWorldFactory().createEnemyBullet(getCenterPosition(), bulletPrototype);
+            bullet.setVelocity(new Vector2f(0, -5));
+        }
+    }
 
-	public BulletPrototype getBulletPrototype()
-	{
-		return bulletPrototype;
-	}
+    @Override
+    public void isHitBy(Entity entity) {
+        if (entity instanceof Border) {
+            markForRemoval();
+        } else {
+            super.isHitBy(entity);
+        }
+    }
 
-	public void setBulletPrototype(BulletPrototype bulletPrototype)
-	{
-		this.bulletPrototype = bulletPrototype;
-	}
+    public BulletPrototype getBulletPrototype() {
+        return bulletPrototype;
+    }
+
+    public void setBulletPrototype(BulletPrototype bulletPrototype) {
+        this.bulletPrototype = bulletPrototype;
+    }
 }

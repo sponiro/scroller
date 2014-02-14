@@ -2,210 +2,178 @@ package rob.scroller.entity;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.*;
 import org.lwjgl.util.vector.Vector2f;
-
 import rob.scroller.ScrollerGameContext;
 import rob.scroller.map.BulletPrototype;
 
-public class Player extends Character
-{
-	private static final float MAX_SPEED = 4;
+public class Player extends Character {
+    private static final float MAX_SPEED = 4;
 
-	private boolean shooting;
-	private long lastShootTime;
+    private boolean shooting;
+    private long lastShootTime;
 
-	private BulletPrototype bulletPrototype;
+    private BulletPrototype bulletPrototype;
 
-	public Player()
-	{
-		setLife(100);
-	}
+    public Player() {
+        setLife(100);
+    }
 
-	@Override
-	public Body createBody(World world, Vector2f position)
-	{
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DYNAMIC;
-		bodyDef.position = new Vec2(position.x, position.y);
+    @Override
+    public Body createBody(World world, Vector2f position) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DYNAMIC;
+        bodyDef.position = new Vec2(position.x, position.y);
 
-		PolygonShape playerBox = new PolygonShape();
-		playerBox.setAsBox(1f / 2, 1f / 2);
+        PolygonShape playerBox = new PolygonShape();
+        playerBox.setAsBox(1f / 2, 1f / 2);
 
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = playerBox;
-		fixtureDef.density = 1;
-		fixtureDef.friction = 0;
-		fixtureDef.restitution = 0;
-		fixtureDef.filter.categoryBits = 1;
-		fixtureDef.filter.maskBits = 4 | 8;
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = playerBox;
+        fixtureDef.density = 1;
+        fixtureDef.friction = 0;
+        fixtureDef.restitution = 0;
+        fixtureDef.filter.categoryBits = 1;
+        fixtureDef.filter.maskBits = 4 | 8;
 
-		Body body = world.createBody(bodyDef);
-		body.createFixture(fixtureDef);
-		body.setUserData(this);
-		setBody(body);
-		
-		return body;
-	}
+        Body body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
+        body.setUserData(this);
+        setBody(body);
 
-	public void moveDown()
-	{
-		Vector2f velocity = getVelocity();
-		velocity.setY(-MAX_SPEED);
-		setVelocity(velocity);
+        return body;
+    }
 
-		normalizeVelocity();
-	}
+    public void moveDown() {
+        Vector2f velocity = getVelocity();
+        velocity.setY(-MAX_SPEED);
+        setVelocity(velocity);
 
-	public void moveUp()
-	{
-		Vector2f velocity = getVelocity();
-		velocity.setY(MAX_SPEED);
-		setVelocity(velocity);
+        normalizeVelocity();
+    }
 
-		normalizeVelocity();
-	}
+    public void moveUp() {
+        Vector2f velocity = getVelocity();
+        velocity.setY(MAX_SPEED);
+        setVelocity(velocity);
 
-	public void stopMoveVertical()
-	{
-		Vector2f velocity = getVelocity();
-		velocity.setY(0);
-		setVelocity(velocity);
+        normalizeVelocity();
+    }
 
-		normalizeVelocity();
-	}
+    public void stopMoveVertical() {
+        Vector2f velocity = getVelocity();
+        velocity.setY(0);
+        setVelocity(velocity);
 
-	public void moveRight()
-	{
-		Vector2f velocity = getVelocity();
-		velocity.setX(MAX_SPEED);
-		setVelocity(velocity);
+        normalizeVelocity();
+    }
 
-		normalizeVelocity();
-	}
+    public void moveRight() {
+        Vector2f velocity = getVelocity();
+        velocity.setX(MAX_SPEED);
+        setVelocity(velocity);
 
-	public void moveLeft()
-	{
-		Vector2f velocity = getVelocity();
-		velocity.setX(-MAX_SPEED);
-		setVelocity(velocity);
+        normalizeVelocity();
+    }
 
-		normalizeVelocity();
-	}
+    public void moveLeft() {
+        Vector2f velocity = getVelocity();
+        velocity.setX(-MAX_SPEED);
+        setVelocity(velocity);
 
-	public void stopMoveHorizontal()
-	{
-		Vector2f velocity = getVelocity();
-		velocity.setX(0);
-		setVelocity(velocity);
+        normalizeVelocity();
+    }
 
-		normalizeVelocity();
-	}
+    public void stopMoveHorizontal() {
+        Vector2f velocity = getVelocity();
+        velocity.setX(0);
+        setVelocity(velocity);
 
-	@Override
-	public void beforeWorldStep(ScrollerGameContext context)
-	{
-		super.beforeWorldStep(context);
+        normalizeVelocity();
+    }
 
-		// shoot(context.getMouseAim());
-		shoot(context, new Vector2f(0, 1));
-	}
+    @Override
+    public void beforeWorldStep(ScrollerGameContext context) {
+        super.beforeWorldStep(context);
 
-	private void normalizeVelocity()
-	{
-		setVelocity(getNormalizedVelocity());
-	}
+        // shoot(context.getMouseAim());
+        shoot(context, new Vector2f(0, 1));
+    }
 
-	private Vector2f getNormalizedVelocity()
-	{
-		Vector2f velocity = getVelocity();
+    private void normalizeVelocity() {
+        setVelocity(getNormalizedVelocity());
+    }
 
-		if (velocity.lengthSquared() >= 0.1)
-		{
-			velocity.scale(MAX_SPEED / velocity.length());
-		} else
-		{
-			velocity.setX(0);
-			velocity.setY(0);
-		}
+    private Vector2f getNormalizedVelocity() {
+        Vector2f velocity = getVelocity();
 
-		return velocity;
-	}
+        if (velocity.lengthSquared() >= 0.1) {
+            velocity.scale(MAX_SPEED / velocity.length());
+        } else {
+            velocity.setX(0);
+            velocity.setY(0);
+        }
 
-	private Vector2f getNormalizedBulletVector(Vector2f bulletVector)
-	{
-		Vector2f bulletVectorCopy = new Vector2f(bulletVector);
+        return velocity;
+    }
 
-		if (bulletVectorCopy.lengthSquared() >= 0.1)
-		{
-			bulletVectorCopy.scale(MAX_SPEED * 3 / bulletVectorCopy.length());
-		}
+    private Vector2f getNormalizedBulletVector(Vector2f bulletVector) {
+        Vector2f bulletVectorCopy = new Vector2f(bulletVector);
 
-		return bulletVectorCopy;
-	}
+        if (bulletVectorCopy.lengthSquared() >= 0.1) {
+            bulletVectorCopy.scale(MAX_SPEED * 3 / bulletVectorCopy.length());
+        }
 
-	public void startShooting()
-	{
-		this.shooting = true;
-	}
+        return bulletVectorCopy;
+    }
 
-	public void stopShooting()
-	{
-		this.shooting = false;
-	}
+    public void startShooting() {
+        this.shooting = true;
+    }
 
-	public boolean isShooting()
-	{
-		return shooting;
-	}
+    public void stopShooting() {
+        this.shooting = false;
+    }
 
-	@Override
-	public void isHitBy(Entity entity)
-	{
-		System.out.println("OMG, I'm hit!");
-	}
+    public boolean isShooting() {
+        return shooting;
+    }
 
-	private boolean shootingAndBulletReady(ScrollerGameContext context)
-	{
-		return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall(context);
-	}
+    @Override
+    public void isHitBy(Entity entity) {
+        System.out.println("OMG, I'm hit!");
+    }
 
-	private float getBulletIntervall(ScrollerGameContext context)
-	{
-		return 5 * context.getWorldTimestep() * 1000;
-	}
+    private boolean shootingAndBulletReady(ScrollerGameContext context) {
+        return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall(context);
+    }
 
-	private long getLastShootTime()
-	{
-		return lastShootTime;
-	}
+    private float getBulletIntervall(ScrollerGameContext context) {
+        return 5 * context.getWorldTimestep() * 1000;
+    }
 
-	private Bullet shoot(ScrollerGameContext context, Vector2f bulletVector)
-	{
-		Bullet bullet = null;
+    private long getLastShootTime() {
+        return lastShootTime;
+    }
 
-		if (shootingAndBulletReady(context))
-		{
-			bullet = context.getWorldFactory().createBullet(getCenterPosition(), bulletPrototype);
-			bullet.setVelocity(getNormalizedBulletVector(bulletVector));
+    private Bullet shoot(ScrollerGameContext context, Vector2f bulletVector) {
+        Bullet bullet = null;
 
-			lastShootTime = context.getNowInMilliseconds();
-		}
+        if (shootingAndBulletReady(context)) {
+            bullet = context.getWorldFactory().createBullet(getCenterPosition(), bulletPrototype);
+            bullet.setVelocity(getNormalizedBulletVector(bulletVector));
 
-		return bullet;
-	}
+            lastShootTime = context.getNowInMilliseconds();
+        }
 
-	public BulletPrototype getBulletPrototype()
-	{
-		return bulletPrototype;
-	}
+        return bullet;
+    }
 
-	public void setBulletPrototype(BulletPrototype bulletPrototype)
-	{
-		this.bulletPrototype = bulletPrototype;
-	}
+    public BulletPrototype getBulletPrototype() {
+        return bulletPrototype;
+    }
+
+    public void setBulletPrototype(BulletPrototype bulletPrototype) {
+        this.bulletPrototype = bulletPrototype;
+    }
 }

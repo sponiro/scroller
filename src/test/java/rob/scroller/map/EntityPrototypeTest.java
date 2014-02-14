@@ -1,30 +1,27 @@
 package rob.scroller.map;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class EntityPrototypeTest
-{
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+import static org.junit.Assert.assertNotNull;
 
-	@Test
-	public void nameNotNull() throws Exception
-	{
-		EntityPrototype ep = new EntityPrototype();
+public class EntityPrototypeTest {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-		assertNotNull(ep.getName());
-	}
+    @Test
+    public void nameNotNull() throws Exception {
+        EntityPrototype ep = new EntityPrototype();
 
-	@Test
-	public void nameDoesNotAllowNull() throws Exception
-	{
-		EntityPrototype ep = new EntityPrototype();
+        assertNotNull(ep.getName());
+    }
 
-		thrown.expect(NullPointerException.class);
-		ep.setName(null);
-	}
+    @Test
+    public void nameDoesNotAllowNull() throws Exception {
+        EntityPrototype ep = new EntityPrototype();
+
+        thrown.expect(NullPointerException.class);
+        ep.setName(null);
+    }
 }

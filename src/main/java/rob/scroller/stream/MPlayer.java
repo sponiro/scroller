@@ -1,6 +1,5 @@
 package rob.scroller.stream;
 
-public class MPlayer extends MCharacter
-{
+public class MPlayer extends MCharacter {
 
 }

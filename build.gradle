@@ -5,57 +5,56 @@ apply plugin: 'eclipse'
 mainClassName = 'rob.scroller.ScrollerGame'
 sourceCompatibility = 1.6
 
-repositories {   mavenCentral()   }
+repositories { mavenCentral() }
 
 dependencies {
-	compile group: 'org.lwjgl.lwjgl', name: 'lwjgl', version: '2.8.3'
-	compile group: 'org.lwjgl.lwjgl', name: 'lwjgl_util', version: '2.8.3'
-	compile group: 'com.google.guava', name: 'guava', version: '13.0.1'
-	compile group: 'com.google.inject', name: 'guice', version: '3.0'
-	compile group: 'org.jbox2d', name: 'jbox2d-library', version: '2.1.2.2'
-	compile group: 'com.fasterxml.jackson.core', name:'jackson-core', version:'2.1.0'
-	compile group: 'com.fasterxml.jackson.core', name:'jackson-databind', version:'2.1.0'
-	compile group: 'com.fasterxml.jackson.core', name:'jackson-annotations', version:'2.1.0'
-	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.2'
-	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.7'
-	compile fileTree(dir: 'lib', include: '*.jar')
-	
-	testCompile group: 'junit', name: 'junit', version: '4.10'
+    compile group: 'org.lwjgl.lwjgl', name: 'lwjgl', version: '2.8.3'
+    compile group: 'org.lwjgl.lwjgl', name: 'lwjgl_util', version: '2.8.3'
+    compile group: 'com.google.guava', name: 'guava', version: '13.0.1'
+    compile group: 'com.google.inject', name: 'guice', version: '3.0'
+    compile group: 'org.jbox2d', name: 'jbox2d-library', version: '2.1.2.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.1.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.1.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.1.0'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.2'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.7'
+    compile fileTree(dir: 'lib', include: '*.jar')
+
+    testCompile group: 'junit', name: 'junit', version: '4.10'
 }
 
-def getPlatformNativeDir(def platform)
-{
-	"$buildDir/natives/$platform"
+def getPlatformNativeDir(def platform) {
+    "$buildDir/natives/$platform"
 }
 
 def platforms = ['windows', 'linux', 'osx']
 
 platforms.each { platform ->
-	
-	task "${platform}Natives" {
-		
-		outputs.dir getPlatformNativeDir(platform) 
-		
-		doLast {	
-			copy {
-				def artifacts = configurations.compile.resolvedConfiguration.resolvedArtifacts
-					.findAll { it.classifier == "natives-$platform" }
-				
-				artifacts.each { from zipTree(it.file) }
-				into getPlatformNativeDir(platform)
-			}
-		}
-	}
+
+    task "${platform}Natives" {
+
+        outputs.dir getPlatformNativeDir(platform)
+
+        doLast {
+            copy {
+                def artifacts = configurations.compile.resolvedConfiguration.resolvedArtifacts
+                        .findAll { it.classifier == "natives-$platform" }
+
+                artifacts.each { from zipTree(it.file) }
+                into getPlatformNativeDir(platform)
+            }
+        }
+    }
 }
 
 task natives {
-	description "Copies native libraries to an appropriate directory."
-	
-	def nativeTasks = platforms.collect { "${it}Natives" }.findAll { tasks[it] }.collect{ tasks[it] }
-	
-	dependsOn nativeTasks
+    description "Copies native libraries to an appropriate directory."
 
-	nativeTasks.collect { it.outputs.files }.findAll { it.each { outputs.file it } }
+    def nativeTasks = platforms.collect { "${it}Natives" }.findAll { tasks[it] }.collect { tasks[it] }
+
+    dependsOn nativeTasks
+
+    nativeTasks.collect { it.outputs.files }.findAll { it.each { outputs.file it } }
 }
 
 processResources.dependsOn natives
@@ -68,23 +67,23 @@ applicationDistribution.from(natives) { into "bin" }
 run.jvmArgs("-Djava.library.path=" + platforms.collect { platform -> getPlatformNativeDir(platform) }.join(File.pathSeparator))
 
 eclipse {
-	classpath {
-		downloadSources = true
-		downloadJavadoc = true
-	}
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }
 
 // handle eclipse configuration with native libs
 // you have to add these natives to your launch configuration
 tasks['eclipse'].dependsOn natives
 tasks['eclipse'].doLast {
-	
-	platforms.each { platform ->
-		copy {
-			from getPlatformNativeDir(platform)
-			into "lib/natives/$platform"
-		}
-	}
+
+    platforms.each { platform ->
+        copy {
+            from getPlatformNativeDir(platform)
+            into "lib/natives/$platform"
+        }
+    }
 }
 
 

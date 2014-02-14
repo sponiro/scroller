@@ -1,29 +1,34 @@
 {
-	"name" : "mainLevel",
-	"generalEntities" : [{
-			"name" : "floor",
-			"sprite" : "floor.png"
-		}
-	],
-	"players" : [{
-			"name" : "player",
-			"sprite" : "ship1.png",
-			"bullets" : ["simple"]
-		}
-	],
-	"enemies" : [{
-			"name" : "defaultEnemy",
-			"sprite" : "enemy.png",
-			"bullets" : ["simple"]
-		}, {
-			"name" : "enemy1",
-			"sprite" : "enemy.png",
-            "bullets" : ["simple"]
-		}
-	],
-	"bullets" : [{
-			"name" : "simple",
-			"sprite" : "bullet.png"
-		}
-	]
+    "name": "mainLevel",
+    "generalEntities": [
+        {
+            "name": "floor",
+            "sprite": "floor.png"
+        }
+    ],
+    "players": [
+        {
+            "name": "player",
+            "sprite": "ship1.png",
+            "bullets": ["simple"]
+        }
+    ],
+    "enemies": [
+        {
+            "name": "defaultEnemy",
+            "sprite": "enemy.png",
+            "bullets": ["simple"]
+        },
+        {
+            "name": "enemy1",
+            "sprite": "enemy.png",
+            "bullets": ["simple"]
+        }
+    ],
+    "bullets": [
+        {
+            "name": "simple",
+            "sprite": "bullet.png"
+        }
+    ]
 }

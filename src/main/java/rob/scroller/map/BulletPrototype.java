@@ -1,6 +1,5 @@
 package rob.scroller.map;
 
-public class BulletPrototype extends EntityPrototype
-{
+public class BulletPrototype extends EntityPrototype {
 
 }

@@ -1,120 +1,101 @@
 package rob.scroller;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 import rob.scroller.entity.Bullet;
 import rob.scroller.entity.Enemy;
 import rob.scroller.entity.Entity;
 import rob.scroller.entity.Player;
 
-import com.google.common.collect.Iterables;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * All entities of the game world are assembled here.
- * 
  */
-public class WorldEntities implements ISimulationAction
-{
-	private final ScrollerGameContext context;
+public class WorldEntities implements ISimulationAction {
+    private final ScrollerGameContext context;
 
-	private Dungeon dungeon;
+    private Dungeon dungeon;
 
-	private Player player;
-	private List<Bullet> bullets;
-	private List<Enemy> enemies;
+    private Player player;
+    private List<Bullet> bullets;
+    private List<Enemy> enemies;
 
-	@Inject
-	public WorldEntities(ScrollerGameContext context)
-	{
-		this.context = context;
+    @Inject
+    public WorldEntities(ScrollerGameContext context) {
+        this.context = context;
 
-		this.enemies = new ArrayList<Enemy>();
-		this.bullets = new LinkedList<Bullet>();
-	}
+        this.enemies = new ArrayList<Enemy>();
+        this.bullets = new LinkedList<Bullet>();
+    }
 
-	public void render()
-	{
-		dungeon.render(context.getRenderer());
+    public void render() {
+        dungeon.render(context.getRenderer());
 
-		for (Entity entity : getEntities())
-		{
-			entity.render(context.getRenderer());
-		}
+        for (Entity entity : getEntities()) {
+            entity.render(context.getRenderer());
+        }
 
-		player.render(context.getRenderer());
-	}
+        player.render(context.getRenderer());
+    }
 
-	public Iterable<Entity> getEntities()
-	{
-		return Iterables.concat(bullets, enemies);
-	}
+    public Iterable<Entity> getEntities() {
+        return Iterables.concat(bullets, enemies);
+    }
 
-	public Player getPlayer()
-	{
-		return player;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public void setPlayer(Player player)
-	{
-		if (this.player != null) {
-			this.player.destroy();
-		}
-		
-		this.player = player;
-	}
+    public void setPlayer(Player player) {
+        if (this.player != null) {
+            this.player.destroy();
+        }
 
-	public List<Bullet> getBullets()
-	{
-		return bullets;
-	}
+        this.player = player;
+    }
 
-	public List<Enemy> getEnemies()
-	{
-		return enemies;
-	}
+    public List<Bullet> getBullets() {
+        return bullets;
+    }
 
-	public Dungeon getDungeon()
-	{
-		return dungeon;
-	}
+    public List<Enemy> getEnemies() {
+        return enemies;
+    }
 
-	public void setDungeon(Dungeon dungeon)
-	{
-		this.dungeon = dungeon;
-	}
+    public Dungeon getDungeon() {
+        return dungeon;
+    }
 
-	public void addEnemy(Enemy enemy)
-	{
-		enemies.add(enemy);
-	}
+    public void setDungeon(Dungeon dungeon) {
+        this.dungeon = dungeon;
+    }
 
-	public void addBullet(Bullet bullet)
-	{
-		bullets.add(bullet);
-	}
+    public void addEnemy(Enemy enemy) {
+        enemies.add(enemy);
+    }
 
-	@Override
-	public void afterWorldStep()
-	{
-		player.afterWorldStep();
+    public void addBullet(Bullet bullet) {
+        bullets.add(bullet);
+    }
 
-		for (Entity entity : getEntities())
-		{
-			entity.afterWorldStep();
-		}
-	}
+    @Override
+    public void afterWorldStep() {
+        player.afterWorldStep();
 
-	@Override
-	public void beforeWorldStep(ScrollerGameContext context)
-	{
-		player.beforeWorldStep(context);
+        for (Entity entity : getEntities()) {
+            entity.afterWorldStep();
+        }
+    }
 
-		for (Entity entity : getEntities())
-		{
-			entity.beforeWorldStep(context);
-		}
-	}
+    @Override
+    public void beforeWorldStep(ScrollerGameContext context) {
+        player.beforeWorldStep(context);
+
+        for (Entity entity : getEntities()) {
+            entity.beforeWorldStep(context);
+        }
+    }
 }

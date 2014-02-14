@@ -1,5 +1,4 @@
 package rob.scroller.map;
 
-public class EnemyPrototype extends CharacterPrototype
-{
+public class EnemyPrototype extends CharacterPrototype {
 }

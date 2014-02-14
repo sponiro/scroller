@@ -1,6 +1,5 @@
 package rob.scroller.input;
 
-public enum HorizontalDirection
-{
-	LEFT, RIGHT, NONE;
+public enum HorizontalDirection {
+    LEFT, RIGHT, NONE;
 }

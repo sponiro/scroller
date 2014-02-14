@@ -1,144 +1,115 @@
 package rob.scroller.map;
 
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import rob.scroller.stream.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
+public class GameMapBuilder {
+    private Map<String, Texture> textures;
+    private GameMap gm;
 
-import rob.scroller.stream.MBullet;
-import rob.scroller.stream.MEnemy;
-import rob.scroller.stream.MEntity;
-import rob.scroller.stream.MMap;
-import rob.scroller.stream.MPlayer;
-import rob.scroller.stream.MapArchive;
-import rob.scroller.stream.MapException;
+    public GameMap load(MapArchive mapArchive) {
+        try {
+            textures = new HashMap<String, Texture>();
+            gm = new GameMap();
 
-public class GameMapBuilder
-{
-	private Map<String, Texture> textures;
-	private GameMap gm;
+            return loadInternal(mapArchive);
+        } catch (IOException e) {
+            throw new GameMapException();
+        }
+    }
 
-	public GameMap load(MapArchive mapArchive)
-	{
-		try
-		{
-			textures = new HashMap<String, Texture>();
-			gm = new GameMap();
+    private GameMap loadInternal(MapArchive mapArchive) throws IOException {
+        MMap mMap = mapArchive.getGameMap();
 
-			return loadInternal(mapArchive);
-		} catch (IOException e)
-		{
-			throw new GameMapException();
-		}
-	}
+        loadTextures(mMap);
 
-	private GameMap loadInternal(MapArchive mapArchive) throws IOException
-	{
-		MMap mMap = mapArchive.getGameMap();
+        for (MPlayer player : mMap.getPlayers()) {
+            addPlayer(player);
+        }
 
-		loadTextures(mMap);
+        for (MEnemy enemy : mMap.getEnemies()) {
+            addEnemy(enemy);
+        }
 
-		for (MPlayer player : mMap.getPlayers())
-		{
-			addPlayer(player);
-		}
+        for (MBullet bullet : mMap.getBullets()) {
+            addBullet(bullet);
+        }
 
-		for (MEnemy enemy : mMap.getEnemies())
-		{
-			addEnemy(enemy);
-		}
+        for (MEntity entity : mMap.getGeneralEntities()) {
+            addGeneralEntity(entity);
+        }
 
-		for (MBullet bullet : mMap.getBullets())
-		{
-			addBullet(bullet);
-		}
+        for (MPlayer player : mMap.getPlayers()) {
+            PlayerPrototype playerPrototype = gm.getPlayerPrototype(player.getName());
 
-		for (MEntity entity : mMap.getGeneralEntities())
-		{
-			addGeneralEntity(entity);
-		}
+            for (String bulletName : player.getBullets()) {
+                if (gm.getBulletPrototype(bulletName) == null) {
+                    throw new MapException(MessageFormat.format("Missing bullet \"{0}\"", bulletName));
+                }
 
-		for (MPlayer player : mMap.getPlayers())
-		{
-			PlayerPrototype playerPrototype = gm.getPlayerPrototype(player.getName());
+                playerPrototype.addBulletPrototype(gm.getBulletPrototype(bulletName));
+            }
+        }
 
-			for (String bulletName : player.getBullets())
-			{
-				if (gm.getBulletPrototype(bulletName) == null)
-				{
-					throw new MapException(MessageFormat.format("Missing bullet \"{0}\"", bulletName));
-				}
+        for (MEnemy enemy : mMap.getEnemies()) {
+            EnemyPrototype enemyPrototype = gm.getEnemyPrototype(enemy.getName());
 
-				playerPrototype.addBulletPrototype(gm.getBulletPrototype(bulletName));
-			}
-		}
+            for (String bulletName : enemy.getBullets()) {
+                if (gm.getBulletPrototype(bulletName) == null) {
+                    throw new MapException(MessageFormat.format("Missing bullet \"{0}\"", bulletName));
+                }
 
-		for (MEnemy enemy : mMap.getEnemies())
-		{
-			EnemyPrototype enemyPrototype = gm.getEnemyPrototype(enemy.getName());
+                enemyPrototype.addBulletPrototype(gm.getBulletPrototype(bulletName));
+            }
+        }
 
-			for (String bulletName : enemy.getBullets())
-			{
-				if (gm.getBulletPrototype(bulletName) == null)
-				{
-					throw new MapException(MessageFormat.format("Missing bullet \"{0}\"", bulletName));
-				}
+        return gm;
+    }
 
-				enemyPrototype.addBulletPrototype(gm.getBulletPrototype(bulletName));
-			}
-		}
+    private void loadTextures(MMap mMap) throws IOException {
+        for (MEntity entity : mMap.getAllEntities()) {
+            Texture texture = TextureLoader.getTexture("PNG", new ByteArrayInputStream(entity.getSpriteData()), true);
+            textures.put(entity.getSprite(), texture);
+        }
+    }
 
-		return gm;
-	}
+    private void addPlayer(MPlayer player) {
+        PlayerPrototype playerPrototype = new PlayerPrototype();
+        setEntityValues(player, playerPrototype);
 
-	private void loadTextures(MMap mMap) throws IOException
-	{
-		for (MEntity entity : mMap.getAllEntities())
-		{
-			Texture texture = TextureLoader.getTexture("PNG", new ByteArrayInputStream(entity.getSpriteData()), true);
-			textures.put(entity.getSprite(), texture);
-		}
-	}
+        gm.addPlayerPrototype(playerPrototype);
+    }
 
-	private void addPlayer(MPlayer player)
-	{
-		PlayerPrototype playerPrototype = new PlayerPrototype();
-		setEntityValues(player, playerPrototype);
+    private void addEnemy(MEnemy enemy) {
+        EnemyPrototype enemyPrototype = new EnemyPrototype();
+        setEntityValues(enemy, enemyPrototype);
 
-		gm.addPlayerPrototype(playerPrototype);
-	}
+        gm.addEnemyPrototype(enemyPrototype);
+    }
 
-	private void addEnemy(MEnemy enemy)
-	{
-		EnemyPrototype enemyPrototype = new EnemyPrototype();
-		setEntityValues(enemy, enemyPrototype);
+    private void addBullet(MBullet bullet) {
+        BulletPrototype bulletPrototype = new BulletPrototype();
+        setEntityValues(bullet, bulletPrototype);
 
-		gm.addEnemyPrototype(enemyPrototype);
-	}
+        gm.addBulletPrototype(bulletPrototype);
+    }
 
-	private void addBullet(MBullet bullet)
-	{
-		BulletPrototype bulletPrototype = new BulletPrototype();
-		setEntityValues(bullet, bulletPrototype);
+    private void addGeneralEntity(MEntity entity) {
+        EntityPrototype entityPrototype = new EntityPrototype();
+        setEntityValues(entity, entityPrototype);
 
-		gm.addBulletPrototype(bulletPrototype);
-	}
+        gm.addGeneralPrototype(entityPrototype);
+    }
 
-	private void addGeneralEntity(MEntity entity)
-	{
-		EntityPrototype entityPrototype = new EntityPrototype();
-		setEntityValues(entity, entityPrototype);
-
-		gm.addGeneralPrototype(entityPrototype);
-	}
-
-	private void setEntityValues(MEntity entity, EntityPrototype entityPrototype)
-	{
-		entityPrototype.setName(entity.getName());
-		entityPrototype.setTexture(textures.get(entity.getSprite()));
-	}
+    private void setEntityValues(MEntity entity, EntityPrototype entityPrototype) {
+        entityPrototype.setName(entity.getName());
+        entityPrototype.setTexture(textures.get(entity.getSprite()));
+    }
 }

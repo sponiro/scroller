@@ -1,136 +1,122 @@
 package rob.scroller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-
 import rob.scroller.input.ExclusiveKeys;
 import rob.scroller.input.ExclusiveKeys.KEYSTATE;
 
-public class ExclusiveKeysTest
-{
+import static org.junit.Assert.*;
 
-	@Test
-	public void keyANotPressed()
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+public class ExclusiveKeysTest {
 
-		assertFalse(input.isAPressed());
-		assertEquals(KEYSTATE.NONE, input.getKeyState());
-	}
+    @Test
+    public void keyANotPressed() {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-	@Test
-	public void pressA()
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertFalse(input.isAPressed());
+        assertEquals(KEYSTATE.NONE, input.getKeyState());
+    }
 
-		input.pressA();
+    @Test
+    public void pressA() {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertTrue(input.isAPressed());
-		assertEquals(KEYSTATE.KEY_A, input.getKeyState());
-	}
+        input.pressA();
 
-	@Test
-	public void keyBNotPressed() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertTrue(input.isAPressed());
+        assertEquals(KEYSTATE.KEY_A, input.getKeyState());
+    }
 
-		assertFalse(input.isBPressed());
-		assertEquals(KEYSTATE.NONE, input.getKeyState());
-	}
+    @Test
+    public void keyBNotPressed() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-	@Test
-	public void pressB() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertFalse(input.isBPressed());
+        assertEquals(KEYSTATE.NONE, input.getKeyState());
+    }
 
-		input.pressB();
+    @Test
+    public void pressB() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertTrue(input.isBPressed());
-		assertEquals(KEYSTATE.KEY_B, input.getKeyState());
-	}
+        input.pressB();
 
-	@Test
-	public void keyAThenKeyB() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertTrue(input.isBPressed());
+        assertEquals(KEYSTATE.KEY_B, input.getKeyState());
+    }
 
-		input.pressA();
-		input.pressB();
+    @Test
+    public void keyAThenKeyB() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertTrue(input.isBPressed());
-		assertFalse(input.isAPressed());
-		assertEquals(KEYSTATE.KEY_B, input.getKeyState());
-	}
+        input.pressA();
+        input.pressB();
 
-	@Test
-	public void keyBThenKeyA() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertTrue(input.isBPressed());
+        assertFalse(input.isAPressed());
+        assertEquals(KEYSTATE.KEY_B, input.getKeyState());
+    }
 
-		input.pressB();
-		input.pressA();
+    @Test
+    public void keyBThenKeyA() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertTrue(input.isAPressed());
-		assertFalse(input.isBPressed());
-		assertEquals(KEYSTATE.KEY_A, input.getKeyState());
-	}
+        input.pressB();
+        input.pressA();
 
-	@Test
-	public void keyAKeyBReleaseB() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertTrue(input.isAPressed());
+        assertFalse(input.isBPressed());
+        assertEquals(KEYSTATE.KEY_A, input.getKeyState());
+    }
 
-		input.pressA();
-		input.pressB();
-		input.releaseB();
+    @Test
+    public void keyAKeyBReleaseB() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertFalse(input.isBPressed());
-		assertTrue(input.isAPressed());
-		assertEquals(KEYSTATE.KEY_A, input.getKeyState());
-	}
+        input.pressA();
+        input.pressB();
+        input.releaseB();
 
-	@Test
-	public void keyBkeyAReleaseA() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertFalse(input.isBPressed());
+        assertTrue(input.isAPressed());
+        assertEquals(KEYSTATE.KEY_A, input.getKeyState());
+    }
 
-		input.pressB();
-		input.pressA();
-		input.releaseA();
+    @Test
+    public void keyBkeyAReleaseA() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertFalse(input.isAPressed());
-		assertTrue(input.isBPressed());
-		assertEquals(KEYSTATE.KEY_B, input.getKeyState());
-	}
+        input.pressB();
+        input.pressA();
+        input.releaseA();
 
-	@Test
-	public void doublePressA() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertFalse(input.isAPressed());
+        assertTrue(input.isBPressed());
+        assertEquals(KEYSTATE.KEY_B, input.getKeyState());
+    }
 
-		input.pressA();
-		input.pressB();
-		input.pressA();
+    @Test
+    public void doublePressA() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertFalse(input.isAPressed());
-		assertTrue(input.isBPressed());
-		assertEquals(KEYSTATE.KEY_B, input.getKeyState());
-	}
+        input.pressA();
+        input.pressB();
+        input.pressA();
 
-	@Test
-	public void doublePressB() throws Exception
-	{
-		ExclusiveKeys input = new ExclusiveKeys();
+        assertFalse(input.isAPressed());
+        assertTrue(input.isBPressed());
+        assertEquals(KEYSTATE.KEY_B, input.getKeyState());
+    }
 
-		input.pressB();
-		input.pressA();
-		input.pressB();
+    @Test
+    public void doublePressB() throws Exception {
+        ExclusiveKeys input = new ExclusiveKeys();
 
-		assertFalse(input.isBPressed());
-		assertTrue(input.isAPressed());
-		assertEquals(KEYSTATE.KEY_A, input.getKeyState());
-	}
+        input.pressB();
+        input.pressA();
+        input.pressB();
+
+        assertFalse(input.isBPressed());
+        assertTrue(input.isAPressed());
+        assertEquals(KEYSTATE.KEY_A, input.getKeyState());
+    }
 }

@@ -1,8 +1,7 @@
 package rob.scroller;
 
-public interface ISimulationAction
-{
-	void beforeWorldStep(ScrollerGameContext context);
+public interface ISimulationAction {
+    void beforeWorldStep(ScrollerGameContext context);
 
-	void afterWorldStep();
+    void afterWorldStep();
 }

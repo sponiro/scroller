@@ -1,8 +1,7 @@
 package rob.scroller.stream;
 
-public interface IMapLoader
-{
+public interface IMapLoader {
 
-	public abstract MapArchive loadMapArchive(String filename);
+    public abstract MapArchive loadMapArchive(String filename);
 
 }

@@ -1,93 +1,80 @@
 package rob.scroller.stream;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 
-public class MMap
-{
-	private String name;
+import java.util.ArrayList;
+import java.util.List;
 
-	private List<MPlayer> players;
-	private List<MEnemy> enemies;
-	private List<MBullet> bullets;
-	private List<MEntity> generalEntities;
+public class MMap {
+    private String name;
 
-	public MMap()
-	{
-		name = "";
-		players = new ArrayList<MPlayer>();
-		enemies = new ArrayList<MEnemy>();
-		bullets = new ArrayList<MBullet>();
-		generalEntities = new ArrayList<MEntity>();
-	}
+    private List<MPlayer> players;
+    private List<MEnemy> enemies;
+    private List<MBullet> bullets;
+    private List<MEntity> generalEntities;
 
-	public List<MBullet> getBullets()
-	{
-		return bullets;
-	}
+    public MMap() {
+        name = "";
+        players = new ArrayList<MPlayer>();
+        enemies = new ArrayList<MEnemy>();
+        bullets = new ArrayList<MBullet>();
+        generalEntities = new ArrayList<MEntity>();
+    }
 
-	public void setBullets(List<MBullet> bullets)
-	{
-		Preconditions.checkNotNull(bullets);
+    public List<MBullet> getBullets() {
+        return bullets;
+    }
 
-		this.bullets = bullets;
-	}
+    public void setBullets(List<MBullet> bullets) {
+        Preconditions.checkNotNull(bullets);
 
-	public List<MPlayer> getPlayers()
-	{
-		return players;
-	}
+        this.bullets = bullets;
+    }
 
-	public void setPlayers(List<MPlayer> players)
-	{
-		Preconditions.checkNotNull(players);
+    public List<MPlayer> getPlayers() {
+        return players;
+    }
 
-		this.players = players;
-	}
+    public void setPlayers(List<MPlayer> players) {
+        Preconditions.checkNotNull(players);
 
-	public List<MEnemy> getEnemies()
-	{
-		return enemies;
-	}
+        this.players = players;
+    }
 
-	public void setEnemies(List<MEnemy> enemies)
-	{
-		Preconditions.checkNotNull(enemies);
+    public List<MEnemy> getEnemies() {
+        return enemies;
+    }
 
-		this.enemies = enemies;
-	}
+    public void setEnemies(List<MEnemy> enemies) {
+        Preconditions.checkNotNull(enemies);
 
-	public List<MEntity> getGeneralEntities()
-	{
-		return generalEntities;
-	}
+        this.enemies = enemies;
+    }
 
-	public void setGeneralEntities(List<MEntity> generalEntities)
-	{
-		Preconditions.checkNotNull(generalEntities);
+    public List<MEntity> getGeneralEntities() {
+        return generalEntities;
+    }
 
-		this.generalEntities = generalEntities;
-	}
+    public void setGeneralEntities(List<MEntity> generalEntities) {
+        Preconditions.checkNotNull(generalEntities);
 
-	public String getName()
-	{
-		return name;
-	}
+        this.generalEntities = generalEntities;
+    }
 
-	public void setName(String name)
-	{
-		Preconditions.checkNotNull(name);
+    public String getName() {
+        return name;
+    }
 
-		this.name = name;
-	}
+    public void setName(String name) {
+        Preconditions.checkNotNull(name);
 
-	@JsonIgnore
-	public Iterable<MEntity> getAllEntities()
-	{
-		return Iterables.concat(getPlayers(), getEnemies(), getBullets(), getGeneralEntities());
-	}
+        this.name = name;
+    }
+
+    @JsonIgnore
+    public Iterable<MEntity> getAllEntities() {
+        return Iterables.concat(getPlayers(), getEnemies(), getBullets(), getGeneralEntities());
+    }
 }

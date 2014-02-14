@@ -1,21 +1,19 @@
 package rob.scroller.map;
 
-import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class CharacterPrototypeTest
-{
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+import static org.junit.Assert.assertNotNull;
 
-	@Test
-	public void bulletsNotNull() throws Exception
-	{
-		CharacterPrototype cp = new CharacterPrototype();
+public class CharacterPrototypeTest {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-		assertNotNull(cp.getBulletPrototypes());
-	}
+    @Test
+    public void bulletsNotNull() throws Exception {
+        CharacterPrototype cp = new CharacterPrototype();
+
+        assertNotNull(cp.getBulletPrototypes());
+    }
 }

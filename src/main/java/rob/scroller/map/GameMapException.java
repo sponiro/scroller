@@ -1,6 +1,5 @@
 package rob.scroller.map;
 
-public class GameMapException extends RuntimeException
-{
+public class GameMapException extends RuntimeException {
 
 }

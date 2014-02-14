@@ -2,76 +2,60 @@ package rob.scroller.input;
 
 /**
  * Represents two mutually exclusive keys and manages their combined state.
- * 
  */
-public class ExclusiveKeys
-{
-	public static enum KEYSTATE
-	{
-		KEY_A, KEY_B, NONE;
-	}
+public class ExclusiveKeys {
+    public static enum KEYSTATE {
+        KEY_A, KEY_B, NONE;
+    }
 
-	private boolean keyAPressed;
-	private boolean keyBPressed;
+    private boolean keyAPressed;
+    private boolean keyBPressed;
 
-	private KEYSTATE keyState = KEYSTATE.NONE;
+    private KEYSTATE keyState = KEYSTATE.NONE;
 
-	public KEYSTATE getKeyState()
-	{
-		return keyState;
-	}
+    public KEYSTATE getKeyState() {
+        return keyState;
+    }
 
-	public void pressA()
-	{
-		if (!this.keyAPressed)
-		{
-			this.keyState = KEYSTATE.KEY_A;
-			this.keyAPressed = true;
-		}
-	}
+    public void pressA() {
+        if (!this.keyAPressed) {
+            this.keyState = KEYSTATE.KEY_A;
+            this.keyAPressed = true;
+        }
+    }
 
-	public boolean isAPressed()
-	{
-		return keyState == KEYSTATE.KEY_A;
-	}
+    public boolean isAPressed() {
+        return keyState == KEYSTATE.KEY_A;
+    }
 
-	public void pressB()
-	{
-		if (!this.keyBPressed)
-		{
-			this.keyState = KEYSTATE.KEY_B;
-			this.keyBPressed = true;
-		}
-	}
+    public void pressB() {
+        if (!this.keyBPressed) {
+            this.keyState = KEYSTATE.KEY_B;
+            this.keyBPressed = true;
+        }
+    }
 
-	public boolean isBPressed()
-	{
-		return keyState == KEYSTATE.KEY_B;
-	}
+    public boolean isBPressed() {
+        return keyState == KEYSTATE.KEY_B;
+    }
 
-	public void releaseA()
-	{
-		this.keyAPressed = false;
+    public void releaseA() {
+        this.keyAPressed = false;
 
-		if (this.keyBPressed)
-		{
-			keyState = KEYSTATE.KEY_B;
-		} else
-		{
-			keyState = KEYSTATE.NONE;
-		}
-	}
+        if (this.keyBPressed) {
+            keyState = KEYSTATE.KEY_B;
+        } else {
+            keyState = KEYSTATE.NONE;
+        }
+    }
 
-	public void releaseB()
-	{
-		this.keyBPressed = false;
+    public void releaseB() {
+        this.keyBPressed = false;
 
-		if (this.keyAPressed)
-		{
-			keyState = KEYSTATE.KEY_A;
-		} else
-		{
-			keyState = KEYSTATE.NONE;
-		}
-	}
+        if (this.keyAPressed) {
+            keyState = KEYSTATE.KEY_A;
+        } else {
+            keyState = KEYSTATE.NONE;
+        }
+    }
 }
