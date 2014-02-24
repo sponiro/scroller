@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 
-mainClassName = 'rob.scroller.ScrollerGame'
+mainClassName = 'de.fanero.ScrollerGame'
 sourceCompatibility = 1.6
 
 repositories { mavenCentral() }
