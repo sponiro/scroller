@@ -10,10 +10,12 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameMapBuilder {
+public class GameMapBuilder implements IGameMapBuilder {
+
     private Map<String, Texture> textures;
     private GameMap gm;
 
+    @Override
     public GameMap load(MapArchive mapArchive) {
         try {
             textures = new HashMap<String, Texture>();

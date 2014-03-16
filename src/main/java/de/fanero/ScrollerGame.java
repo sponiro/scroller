@@ -3,6 +3,14 @@ package de.fanero;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import de.fanero.entity.Enemy;
+import de.fanero.entity.Entity;
+import de.fanero.entity.Player;
+import de.fanero.input.IPlayerInput;
+import de.fanero.map.EnemyPrototype;
+import de.fanero.map.GameMap;
+import de.fanero.map.PlayerPrototype;
+import de.fanero.stream.MapArchive;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -15,16 +23,6 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
-import de.fanero.entity.Enemy;
-import de.fanero.entity.Entity;
-import de.fanero.entity.Player;
-import de.fanero.input.PlayerInput;
-import de.fanero.map.EnemyPrototype;
-import de.fanero.map.GameMap;
-import de.fanero.map.PlayerPrototype;
-import de.fanero.stream.IMapLoader;
-import de.fanero.stream.MapArchive;
-import de.fanero.stream.MapLoader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,32 +31,36 @@ import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.Random;
 
-public class ScrollerGame {
-
-    private final float TILE_SIZE = 50;
+public class ScrollerGame implements IScrollerGame {
 
     /**
-     * frames per second
+     * current frames per second
      */
     private int fps;
 
     /**
-     * last fps time
+     * last fps time measure
      */
     private long lastFPSTime;
+
+    /**
+     * last fps measure
+     */
     private int lastFPS;
 
+    /**
+     * user wants to exit
+     */
     private boolean wantsExit;
 
     private Random random = new Random();
 
+    /**
+     * some reused buffers
+     */
     private FloatBuffer modelBuffer;
     private FloatBuffer projectionBuffer;
     private IntBuffer viewBuffer;
-
-    private WorldStepCounter worldStepCounter;
-
-    private PlayerInput playerInput = new PlayerInput();
 
     /**
      * Injections
@@ -66,12 +68,10 @@ public class ScrollerGame {
     private WorldFactory worldFactory;
     private ScrollerGameContext context;
     private WorldEntities worldEntities;
+    private IPlayerInput playerInput;
+    private WorldStepCounter worldStepCounter;
 
-    public void start(MapArchive mapArchive) throws SlickException {
-        context.setDisplayWidth(800);
-        context.setDisplayHeight(600);
-        // context.setDisplayWidth(1000);
-        // context.setDisplayHeight(750);
+    public void start(MapArchive mapArchive) {
 
         try {
             Display.setDisplayMode(new DisplayMode(context.getDisplayWidth(), context.getDisplayHeight()));
@@ -89,19 +89,21 @@ public class ScrollerGame {
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
+
+        } catch (SlickException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
 
         initGame();
         initGL();
 
-        worldStepCounter = new WorldStepCounter(context.getWorldTimestep());
         worldStepCounter.reset(getTime());
         lastFPSTime = worldStepCounter.getWorldTime();
-        context.setNowInMilliseconds(worldStepCounter.getWorldTime());
 
         wantsExit = false;
 
-        while (!Display.isCloseRequested() && !wantsExit) {
+        while (!(Display.isCloseRequested() || wantsExit)) {
             processInput();
             simulateWorld();
             renderObjects();
@@ -229,7 +231,6 @@ public class ScrollerGame {
             if (Mouse.getEventButton() == 0) {
                 if (Mouse.getEventButtonState()) {
                     getPlayer().startShooting();
-
                 } else {
                     getPlayer().stopShooting();
                 }
@@ -246,16 +247,13 @@ public class ScrollerGame {
         // physics simulation lags behind frame rendering
         // several simulation steps might be necessary between renders
         while (worldStepCounter.needsStep()) {
+
             context.setMouseAim(getMouseAim());
 
             createEnemies();
 
-            worldEntities.beforeWorldStep(context);
-
+            worldEntities.beforeWorldStep();
             worldStepCounter.step();
-            context.setNowInMilliseconds(worldStepCounter.getWorldTime());
-            context.getWorld().step(context.getWorldTimestep(), 8, 3);
-
             worldEntities.afterWorldStep();
         }
 
@@ -331,7 +329,7 @@ public class ScrollerGame {
     private void renderObjects() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glPushMatrix();
-        GL11.glScalef(TILE_SIZE, TILE_SIZE, 1);
+        GL11.glScalef(context.getTileSize(), context.getTileSize(), 1);
 
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelBuffer);
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionBuffer);
@@ -386,15 +384,12 @@ public class ScrollerGame {
      * @throws FileNotFoundException
      */
     public static void main(String[] argv) throws SlickException, FileNotFoundException {
+
         String mapFilename = argv.length >= 1 ? argv[0] : "data/map.zip";
 
-        IMapLoader mapLoader = new MapLoader();
-        MapArchive mapArchive = mapLoader.loadMapArchive(mapFilename);
-
         Injector injector = Guice.createInjector(new GameModule());
-
-        ScrollerGame game = injector.getInstance(ScrollerGame.class);
-        game.start(mapArchive);
+        IGameLoader gameLoader = injector.getInstance(IGameLoader.class);
+        gameLoader.load(mapFilename);
     }
 
     @Inject
@@ -410,5 +405,15 @@ public class ScrollerGame {
     @Inject
     public void setWorldEntities(WorldEntities worldEntities) {
         this.worldEntities = worldEntities;
+    }
+
+    @Inject
+    public void setPlayerInput(IPlayerInput playerInput) {
+        this.playerInput = playerInput;
+    }
+
+    @Inject
+    public void setWorldStepCounter(WorldStepCounter worldStepCounter) {
+        this.worldStepCounter = worldStepCounter;
     }
 }

@@ -1,7 +1,6 @@
 package de.fanero.entity;
 
 import com.google.inject.Inject;
-import de.fanero.ScrollerGameContext;
 import de.fanero.WorldFactory;
 import de.fanero.map.BulletPrototype;
 import org.jbox2d.collision.shapes.PolygonShape;
@@ -46,8 +45,8 @@ public class Enemy extends Character {
     }
 
     @Override
-    public void beforeWorldStep(ScrollerGameContext context) {
-        super.beforeWorldStep(context);
+    public void beforeWorldStep() {
+        super.beforeWorldStep();
 
         Random random = new Random();
         if (random.nextFloat() < 0.1) {

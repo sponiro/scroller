@@ -1,67 +1,52 @@
 package de.fanero;
 
 import com.google.inject.Inject;
-import org.jbox2d.callbacks.ContactListener;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.World;
+import com.typesafe.config.Config;
+import de.fanero.map.GameMap;
+import de.fanero.map.IGameMapBuilder;
+import de.fanero.stream.MapArchive;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
-import de.fanero.map.GameMap;
-import de.fanero.map.GameMapBuilder;
-import de.fanero.stream.MapArchive;
 
 import java.awt.*;
 import java.io.IOException;
 
 public class ScrollerGameContext {
 
-    private static float WORLD_TIMESTEP = 1f / 60;
-
     private int displayWidth;
     private int displayHeight;
+    private float tileSize;
 
-    private long nowInMilliseconds;
     private Vector2f mouseAim;
 
-    private World world;
-
     private UnicodeFont textFont;
-    private IRenderer renderer;
 
     private GameMap gameMap;
 
+    /**
+     * Injections
+     */
+    private IGameMapBuilder gameMapBuilder;
+
     @Inject
-    public ScrollerGameContext(ContactListener contactListener) {
-        world = new World(new Vec2(0, 0), true);
-        world.setContactListener(contactListener);
+    public ScrollerGameContext(Config config) {
+
+        setDisplayWidth(config.getInt("scroller.width"));
+        setDisplayHeight(config.getInt("scroller.height"));
+        setTileSize(config.getInt("scroller.tile-size"));
     }
 
     @SuppressWarnings("unchecked")
     public void loadAndInit(MapArchive mapArchive) throws IOException, SlickException {
-        loadGameMap(mapArchive);
+
+        gameMap = gameMapBuilder.load(mapArchive);
 
         textFont = new UnicodeFont(new Font("Times New Roman", Font.PLAIN, 18));
         textFont.addAsciiGlyphs();
         textFont.getEffects().add(new ColorEffect(java.awt.Color.WHITE));
         textFont.loadGlyphs();
-    }
-
-    private void loadGameMap(MapArchive mapArchive) throws IOException {
-        GameMapBuilder gameMapBuilder = new GameMapBuilder();
-        gameMap = gameMapBuilder.load(mapArchive);
-    }
-
-    public World getWorld() {
-        return world;
-    }
-
-    /**
-     * @return world simulation time step measure in fractions of a second
-     */
-    public float getWorldTimestep() {
-        return WORLD_TIMESTEP;
     }
 
     public int getDisplayWidth() {
@@ -80,6 +65,14 @@ public class ScrollerGameContext {
         this.displayHeight = displayHeight;
     }
 
+    public float getTileSize() {
+        return tileSize;
+    }
+
+    public void setTileSize(float tileSize) {
+        this.tileSize = tileSize;
+    }
+
     public UnicodeFont getTextFont() {
         return textFont;
     }
@@ -96,14 +89,6 @@ public class ScrollerGameContext {
         return center;
     }
 
-    public void setNowInMilliseconds(long nowInMilliseconds) {
-        this.nowInMilliseconds = nowInMilliseconds;
-    }
-
-    public long getNowInMilliseconds() {
-        return nowInMilliseconds;
-    }
-
     public void setMouseAim(Vector2f mouseAim) {
         this.mouseAim = mouseAim;
     }
@@ -115,4 +100,10 @@ public class ScrollerGameContext {
     public GameMap getGameMap() {
         return gameMap;
     }
+
+    @Inject
+    public void setGameMapBuilder(IGameMapBuilder gameMapBuilder) {
+        this.gameMapBuilder = gameMapBuilder;
+    }
+
 }

@@ -70,7 +70,7 @@ public abstract class Entity implements ISimulationAction {
     }
 
     @Override
-    public void beforeWorldStep(ScrollerGameContext context) {
+    public void beforeWorldStep() {
 
     }
 

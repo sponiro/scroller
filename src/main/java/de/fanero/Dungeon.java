@@ -1,14 +1,26 @@
 package de.fanero;
 
+import com.google.inject.Inject;
+import de.fanero.entity.Border;
 import de.fanero.map.EntityPrototype;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.FixtureDef;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Dungeon {
+
     private static final float SPEED = 1.5f;
 
+    /**
+     * Injectons
+     */
     private final ScrollerGameContext context;
+    private WorldStepCounter worldStepCounter;
 
     private int rows;
     private int columns;
@@ -18,13 +30,12 @@ public class Dungeon {
     private int totalRows;
     private long start;
 
-    /**
-     * @param context
-     * @param columns
-     * @param rows
-     */
-    public Dungeon(ScrollerGameContext context, int columns, int rows) {
+    @Inject
+    public Dungeon(ScrollerGameContext context) {
         this.context = context;
+    }
+
+    public void init(int columns, int rows) {
         this.columns = columns;
         this.rows = rows;
 
@@ -45,10 +56,64 @@ public class Dungeon {
 
             floorTiles.add(row);
         }
+
+        createDungeonBorder(this.columns, this.rows, 1, 1);
+    }
+
+    private void createDungeonBorder(float width, float height, float distance, float borderWidth) {
+
+        Vec2 v1 = new Vec2();
+        Vec2 v2 = new Vec2(width, height);
+
+        float halfBorderWidth = borderWidth / 2;
+        float halfheight = Math.abs(v1.y - v2.y) / 2 + distance + borderWidth;
+        float halfwidth = Math.abs(v1.x - v2.x) / 2 + distance + borderWidth;
+
+        Vec2 vRight = new Vec2();
+        vRight.x = Math.max(v1.x, v2.x) + halfBorderWidth + distance;
+        vRight.y = (v1.y + v2.y) / 2;
+
+        Vec2 vLeft = new Vec2();
+        vLeft.x = Math.min(v1.x, v2.x) - halfBorderWidth - distance;
+        vLeft.y = vRight.y;
+
+        Vec2 vTop = new Vec2();
+        vTop.x = (v1.x + v2.x) / 2;
+        vTop.y = Math.max(v1.y, v2.y) + halfBorderWidth + distance * 4;
+
+        Vec2 vBottom = new Vec2();
+        vBottom.x = vTop.x;
+        vBottom.y = Math.min(v1.y, v2.y) - halfBorderWidth - distance;
+
+        createBorder(vRight, halfBorderWidth, halfheight);
+        createBorder(vLeft, halfBorderWidth, halfheight);
+        createBorder(vTop, halfwidth, halfBorderWidth);
+        createBorder(vBottom, halfwidth, halfBorderWidth);
+    }
+
+    private Body createBorder(Vec2 position, float halfwidth, float halfheight) {
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(position);
+
+        PolygonShape polygonShape = new PolygonShape();
+        polygonShape.setAsBox(halfwidth, halfheight);
+
+        Body body = worldStepCounter.getWorld().createBody(bodyDef);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = polygonShape;
+        fixtureDef.filter.categoryBits = 8;
+        fixtureDef.filter.maskBits = 0xffff;
+
+        body.createFixture(fixtureDef);
+        body.setUserData(new Border());
+
+        return body;
     }
 
     public void resetToStart() {
-        start = context.getNowInMilliseconds();
+        start = worldStepCounter.getWorldTime();
     }
 
     public int getColumns() {
@@ -90,7 +155,7 @@ public class Dungeon {
     }
 
     private long getTimeDelta() {
-        return context.getNowInMilliseconds() - start;
+        return worldStepCounter.getWorldTime() - start;
     }
 
     public Floor getTile(int col, int row) {
@@ -114,5 +179,10 @@ public class Dungeon {
         // floor.setTexture(context.getEmptyTexture());
 
         return floor;
+    }
+
+    @Inject
+    public void setWorldStepCounter(WorldStepCounter worldStepCounter) {
+        this.worldStepCounter = worldStepCounter;
     }
 }

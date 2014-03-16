@@ -1,5 +1,6 @@
 package de.fanero.entity;
 
+import com.google.inject.Inject;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
@@ -7,8 +8,10 @@ import org.lwjgl.util.vector.Vector2f;
 
 
 public class Bullet extends Entity {
+
     private int damage;
 
+    @Inject
     public Bullet() {
         this.damage = 1;
     }

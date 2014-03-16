@@ -24,7 +24,6 @@ public class WorldEntities implements ISimulationAction {
     private List<Bullet> bullets;
     private List<Enemy> enemies;
 
-
     @Inject
     public WorldEntities(IRenderer renderer) {
         this.renderer = renderer;
@@ -85,20 +84,20 @@ public class WorldEntities implements ISimulationAction {
     }
 
     @Override
+    public void beforeWorldStep() {
+        player.beforeWorldStep();
+
+        for (Entity entity : getEntities()) {
+            entity.beforeWorldStep();
+        }
+    }
+
+    @Override
     public void afterWorldStep() {
         player.afterWorldStep();
 
         for (Entity entity : getEntities()) {
             entity.afterWorldStep();
-        }
-    }
-
-    @Override
-    public void beforeWorldStep(ScrollerGameContext context) {
-        player.beforeWorldStep(context);
-
-        for (Entity entity : getEntities()) {
-            entity.beforeWorldStep(context);
         }
     }
 }

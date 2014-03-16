@@ -1,8 +1,8 @@
 package de.fanero.entity;
 
 import com.google.inject.Inject;
-import de.fanero.ScrollerGameContext;
 import de.fanero.WorldFactory;
+import de.fanero.WorldStepCounter;
 import de.fanero.map.BulletPrototype;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -10,6 +10,7 @@ import org.jbox2d.dynamics.*;
 import org.lwjgl.util.vector.Vector2f;
 
 public class Player extends Character {
+
     private static final float MAX_SPEED = 4;
 
     private boolean shooting;
@@ -17,16 +18,19 @@ public class Player extends Character {
 
     private BulletPrototype bulletPrototype;
     private WorldFactory worldFactory;
+    private WorldStepCounter worldStepCounter;
 
     @Inject
-    public Player(WorldFactory worldFactory) {
+    public Player(WorldFactory worldFactory, WorldStepCounter worldStepCounter) {
         this.worldFactory = worldFactory;
+        this.worldStepCounter = worldStepCounter;
+
         setLife(100);
     }
 
-
     @Override
     public Body createBody(World world, Vector2f position) {
+
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
         bodyDef.position = new Vec2(position.x, position.y);
@@ -99,11 +103,11 @@ public class Player extends Character {
     }
 
     @Override
-    public void beforeWorldStep(ScrollerGameContext context) {
-        super.beforeWorldStep(context);
+    public void beforeWorldStep() {
+        super.beforeWorldStep();
 
         // shoot(context.getMouseAim());
-        shoot(context, new Vector2f(0, 1));
+        shoot(new Vector2f(0, 1));
     }
 
     private void normalizeVelocity() {
@@ -150,26 +154,27 @@ public class Player extends Character {
         System.out.println("OMG, I'm hit!");
     }
 
-    private boolean shootingAndBulletReady(ScrollerGameContext context) {
-        return isShooting() && context.getNowInMilliseconds() - getLastShootTime() >= getBulletIntervall(context);
+    private boolean shootingAndBulletReady() {
+        return isShooting() && worldStepCounter.getWorldTime() - getLastShootTime() >= getBulletIntervall();
     }
 
-    private float getBulletIntervall(ScrollerGameContext context) {
-        return 5 * context.getWorldTimestep() * 1000;
+    private float getBulletIntervall() {
+        return 5 * worldStepCounter.getWorldStep();
     }
 
     private long getLastShootTime() {
         return lastShootTime;
     }
 
-    private Bullet shoot(ScrollerGameContext context, Vector2f bulletVector) {
+    private Bullet shoot(Vector2f bulletVector) {
+
         Bullet bullet = null;
 
-        if (shootingAndBulletReady(context)) {
+        if (shootingAndBulletReady()) {
             bullet = worldFactory.createBullet(getCenterPosition(), bulletPrototype);
             bullet.setVelocity(getNormalizedBulletVector(bulletVector));
 
-            lastShootTime = context.getNowInMilliseconds();
+            lastShootTime = worldStepCounter.getWorldTime();
         }
 
         return bullet;
