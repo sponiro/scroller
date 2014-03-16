@@ -34,21 +34,6 @@ import java.util.Random;
 public class ScrollerGame implements IScrollerGame {
 
     /**
-     * current frames per second
-     */
-    private int fps;
-
-    /**
-     * last fps time measure
-     */
-    private long lastFPSTime;
-
-    /**
-     * last fps measure
-     */
-    private int lastFPS;
-
-    /**
      * user wants to exit
      */
     private boolean wantsExit;
@@ -70,8 +55,36 @@ public class ScrollerGame implements IScrollerGame {
     private WorldEntities worldEntities;
     private IPlayerInput playerInput;
     private WorldStepCounter worldStepCounter;
+    private Fps fps;
 
     public void start(MapArchive mapArchive) {
+
+        setupDisplay(mapArchive);
+
+        initGame();
+        initGL();
+
+        worldStepCounter.reset(getTime());
+        fps = new Fps(worldStepCounter.getWorldTime());
+
+        wantsExit = false;
+
+        while (!(Display.isCloseRequested() || wantsExit)) {
+            processInput();
+            simulateWorld();
+            renderObjects();
+
+            // sleep to keep 60 fps
+            Display.sync(60);
+            Display.update();
+
+            worldStepCounter.updateCurrentTime(getTime());
+        }
+
+        Display.destroy();
+    }
+
+    private void setupDisplay(MapArchive mapArchive) {
 
         try {
             Display.setDisplayMode(new DisplayMode(context.getDisplayWidth(), context.getDisplayHeight()));
@@ -94,28 +107,6 @@ public class ScrollerGame implements IScrollerGame {
             e.printStackTrace();
             System.exit(1);
         }
-
-        initGame();
-        initGL();
-
-        worldStepCounter.reset(getTime());
-        lastFPSTime = worldStepCounter.getWorldTime();
-
-        wantsExit = false;
-
-        while (!(Display.isCloseRequested() || wantsExit)) {
-            processInput();
-            simulateWorld();
-            renderObjects();
-
-            // sleep to keep 60 fps
-            Display.sync(60);
-            Display.update();
-
-            worldStepCounter.updateCurrentTime(getTime());
-        }
-
-        Display.destroy();
     }
 
     private void initGL() {
@@ -346,34 +337,20 @@ public class ScrollerGame implements IScrollerGame {
      * Calculate the FPS and draws it on screen
      */
     private void updateFPS() {
-        if (getTime() - lastFPSTime > 1000) {
-            lastFPS = fps;
-            fps = 0;
-            lastFPSTime += 1000;
-        }
 
-        fps++;
+        fps.incFpsCounter();
 
         GL11.glPushMatrix();
         GL11.glTranslatef(0, 600, 0);
         GL11.glScalef(1, -1, 1);
 
-        context.getTextFont().drawString(0, 0, Long.toString(lastFPS) + " fps", Color.white);
+        context.getTextFont().drawString(0, 0, Float.toString(fps.getFps()) + " fps", Color.white);
         context.getTextFont().drawString(0, 20,
                 Long.toString(worldEntities.getBullets().size()) + " bullets", Color.white);
         context.getTextFont().drawString(0, 40,
                 Long.toString(worldEntities.getEnemies().size()) + " enemies", Color.white);
 
         GL11.glPopMatrix();
-    }
-
-    /**
-     * Get the time in milliseconds
-     *
-     * @return The system time in milliseconds
-     */
-    private long getTime() {
-        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
 
     /**
@@ -390,6 +367,15 @@ public class ScrollerGame implements IScrollerGame {
         Injector injector = Guice.createInjector(new GameModule());
         IGameLoader gameLoader = injector.getInstance(IGameLoader.class);
         gameLoader.load(mapFilename);
+    }
+
+    /**
+     * Get the time in milliseconds
+     *
+     * @return The system time in milliseconds
+     */
+    private long getTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
 
     @Inject
